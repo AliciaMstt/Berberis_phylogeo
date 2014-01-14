@@ -1,0 +1,78 @@
+# !/bin/sh
+# This script creates a whitelist file of loci and PopMap based on PostCleaning.R, then runs populations from from Stacks to export data as plink 
+#
+## Create folder for outputs in 1stacks. This will be the WD
+# 
+mkdir ~/../../Volumes/TO_GO/BerL_1_2_3/1stacks/stacks/PopSamples_m3/Popsouts_Rselec
+#
+## Prepare whitelist of RADloci and samples (PopulationMap) selected after the PostCleaning.r Rscript, using the following script:
+R CMD BATCH ~/../../Volumes/TO_GO/BerL_1_2_3/2R/PopSamples/bin/whitelist_PopSamples.r
+#
+### Copy resulted whitelists from R directory to stacks WD
+#
+# For whitelists:
+cp ~/../../Volumes/TO_GO/BerL_1_2_3/2R/PopSamples/docs/PopSamples_BeralpBt_m3.SNP.SNPs_whitelist.tsv ~/../../Volumes/TO_GO/BerL_1_2_3/1stacks/stacks/PopSamples/PopSamples_m3/Popsouts_Rselec/
+#
+#
+# For the Population Map:
+cp ~/../../Volumes/TO_GO/BerL_1_2_3/2R/PopSamples/docs/PopSamples_BeralpBt_m3.SNP.SNPs_PopMap* ~/../../Volumes/TO_GO/BerL_1_2_3/1stacks/stacks/PopSamples/PopSamples_m3/BeralpBt/
+#
+### Go to WD directory for populations script
+cd ~/../../Volumes/TO_GO/BerL_1_2_3/1stacks/stacks/PopSamples_m3/Popsouts_Rselec
+#
+# Create folders for output
+mkdir out.replicates out.noreplicates
+#
+##  For data EXLUDING replicates
+# Run populations Stacks program to estimate Fst and export 
+# Filter input so that to process a locus it must be present in -p 8 of the populations 
+# Include a p-value correction to FST scores, if an FST score isn't significantly different from 0 (according to Fisher's Exact Test ), set the value to 0. pvalue 0.05 by default
+# Use Population map that excludes replicates
+# export to Plink format
+# 
+#
+# Delete posible .fst outs from previous runs
+rm ../BeralpBt/batch_1.fst*
+#
+# Run populations
+populations -P ../BeralpBt/ -M ../BeralpBt/PopSamples_BeralpBt_m3.SNP.SNPs_PopMap_norep.tsv -b 1 -p 8 -f p_value --plink -W ./PopSamples_BeralpBt_m3.SNP.SNPs_whitelist.tsv
+#
+# Run plink to recode .ped to .raw plink file. This reads the plink.ped file and creates a plink.raw file in the WD
+plink --file ../BeralpBt/batch_1.plink --allow-no-sex --recodeA
+#
+# Have outputs to output folder to have them in a single place
+mv ../BeralpBt/batch_1.fst* ./out.noreplicates
+mv ../BeralpBt/batch_1.plink* ./out.noreplicates
+mv ../BeralpBt/batch_1.populations* ./out.noreplicates
+mv ../BeralpBt/batch_1.sumstats* ./out.noreplicates
+mv ./plink* ./out.noreplicates
+#
+#
+##  For data INCLUDING replicates
+# Run populations Stacks program to estimate to export to plink
+# Filter input so that to process a locus it must be present in -p 8 of the populations 
+# Use Population map that includes replicates
+# export to Plink format
+# 
+#
+# Delete posible .fst outs from previous runs
+rm ../batch_1.fst*
+#
+# Run populations
+populations -P ../BeralpBt/ -M ../BeralpBt/PopSamples_BeralpBt_m3.SNP.SNPs_PopMap_withrep.tsv -b 1 -p 8 --plink -W ./PopSamples_BeralpBt_m3.SNP.SNPs_whitelist.tsv
+#
+# Run plink to recode .ped to .raw plink file. This reads the plink.ped file and creates a plink.raw file in the WD
+plink --file ../BeralpBt/batch_1.plink --allow-no-sex --recodeA
+#
+# Have outputs in output folder to have them in a single place
+mv ../BeralpBt/batch_1.fst* ./out.replicates
+mv ../BeralpBt/batch_1.plink* ./out.replicates
+mv ../BeralpBt/batch_1.populations* ./out.replicates
+mv ../BeralpBt/batch_1.sumstats* ./out.replicates
+mv ./plink* ./out.replicates
+
+
+##### Copy results to 2R folder:
+
+cp -r ~/../../Volumes/TO_GO/BerL_1_2_3/1stacks/stacks/PopSamples/PopSamples_m3/Popsouts_Rselec ~/../../Volumes/TO_GO/BerL_1_2_3/2R/PopSamples/data.out/PopSamples_m3
+
