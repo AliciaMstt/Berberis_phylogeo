@@ -1,6 +1,6 @@
 rm(list = ls())
-WD<-"/gpfs/bio/bxh10nyu/BerL_1_2_3/PopSamples/" #directory to work on the cluster
-# WD<-"/Volumes/TO_GO/BerL_1_2_3/2R/PopSamples/"
+WD<-"/gpfs/bio/bxh10nyu/BerL_1_2_3/3Berberis_phylogeo/" #directory to work on the cluster
+# WD<-"/Volumes/TO_GO/BerL_1_2_3/2R/3Berberis_phylogeo/"
 setwd(WD) 
 list.files()
 
@@ -304,6 +304,6 @@ PostCleaning <- function(tsv, cov, directory,nsamps){
 
 
 ## Run the function with every different dataset
-pdf(file=paste(WD,"docs/PopSamples_PostCleaning.pdf", sep = ""))
-PostCleaning("PopSamples_BeralpBt_m3.SNP", "PopSamples_BeralpBt_m3.COV", "PopSamples_m3", 92)
+pdf(file=paste(WD,"docs/3Berberis_phylogeo_PostCleaning.pdf", sep = ""))
+PostCleaning("3Berberis_phylogeo_BeralpBt_m3.SNP", "3Berberis_phylogeo_BeralpBt_m3.COV", "3Berberis_phylogeo_m3", 92)
 dev.off()

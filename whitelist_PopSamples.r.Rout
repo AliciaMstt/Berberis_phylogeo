@@ -1,0 +1,58 @@
+
+R version 2.15.1 (2012-06-22) -- "Roasted Marshmallows"
+Copyright (C) 2012 The R Foundation for Statistical Computing
+ISBN 3-900051-07-0
+Platform: x86_64-apple-darwin9.8.0/x86_64 (64-bit)
+
+R is free software and comes with ABSOLUTELY NO WARRANTY.
+You are welcome to redistribute it under certain conditions.
+Type 'license()' or 'licence()' for distribution details.
+
+  Natural language support but running in an English locale
+
+R is a collaborative project with many contributors.
+Type 'contributors()' for more information and
+'citation()' on how to cite R or R packages in publications.
+
+Type 'demo()' for some demos, 'help()' for on-line help, or
+'help.start()' for an HTML browser interface to help.
+Type 'q()' to quit R.
+
+> rm(list = ls())
+> 
+> # Define WD and other directories
+> WD<-"/Volumes/TO_GO_1/BerL_1_2_3/3Berberis_phylogeo" 
+> setwd(WD) 
+> list.files()
+[1] "bin"      "data.in"  "data.out" "docs"     "info"     "README"  
+> 
+> outfolder = "/data.out/" # tvsdirectory, where the SNP matrices are
+> 
+> ### load samples meta information (lane, barcode, pop, etc)
+> matinfo = read.delim(paste(WD,"/info/Ber_06oct13.info", sep = ""), header = T)
+> 
+> ## Load custom functions to create white list of loci and population maps:
+> source(paste0(WD,"/bin/whiteRADlist.R"))
+> source(paste0(WD,"/bin/whitePopMap.R"))
+> 
+> 
+> # Run whiteRAD lsit for m3
+> whiteRADlist(tsv= paste0(WD,outfolder,"PopSamples_m3/PopSamples_BeralpBt_m3.SNP.SNPs"), writedirectory= paste0(WD,"/docs"))
+> 
+> # Create population map EXCLUDING replicates
+> whitePopMap(drop.rep = TRUE, tsv= paste0(WD,outfolder,"PopSamples_m3/PopSamples_BeralpBt_m3.SNP.SNPs"), writedirectory= paste0(WD,"/docs"), matinfo=matinfo)
+'data.frame':	65 obs. of  2 variables:
+ $ sample: chr  "AjB01" "AjB02" "AjB09" "AjB10" ...
+ $ Pop   : int  1 1 1 1 1 1 1 1 1 1 ...
+> 
+> # Create population map INCLUDING replicates
+> whitePopMap(drop.rep = FALSE, tsv= paste0(WD,outfolder,"PopSamples_m3/PopSamples_BeralpBt_m3.SNP.SNPs"), writedirectory= paste0(WD,"/docs"), matinfo=matinfo)
+'data.frame':	77 obs. of  2 variables:
+ $ sample: chr  "AjB01" "AjB02" "AjB09" "AjB10" ...
+ $ Pop   : int  1 1 1 1 1 1 1 1 1 1 ...
+> 
+> 
+> 
+> proc.time()
+   user  system elapsed 
+  2.066   0.096   3.694 

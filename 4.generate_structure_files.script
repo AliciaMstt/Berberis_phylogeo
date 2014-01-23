@@ -1,5 +1,5 @@
 # !/bin/sh
-# This script creates a whitelist file of loci and PopMap based on PostCleaning.R, then runs populations from from Stacks to export data as plink 
+# This script creates a whitelist file of loci and PopMap based on the Blasted data, then runs populations from from Stacks to export data as STRUCTURE
 #
 ## Create folder for outputs in 1stacks. This will be the WD
 # 
@@ -60,7 +60,7 @@ mv ../BeralpBt/batch_1.structure.tsv ./out.noreplicates/
 rm ../batch_1.fst*
 #
 # Run populations
-populations -P ../BeralpBt/ -M ../BeralpBt/PopSamples_BeralpBt_m3.SNP.SNPs_PopMap_withrep.tsv -b 1 -p 8 --plink --structure --write_single_snp -W ./PopSamples_BeralpBt_m3.SNP.SNPs_whitelist.tsv
+populations -P ../BeralpBt/ -M ../BeralpBt/PopSamples_BeralpBt_m3.SNP.SNPs_PopMap_withrep.tsv -b 1 -p 8 --plink -W ./PopSamples_BeralpBt_m3.SNP.SNPs_whitelist.tsv
 #
 # Run plink to recode .ped to .raw plink file. This reads the plink.ped file and creates a plink.raw file in the WD
 plink --file ../BeralpBt/batch_1.plink --allow-no-sex --recodeA
@@ -71,10 +71,11 @@ mv ../BeralpBt/batch_1.plink* ./out.replicates
 mv ../BeralpBt/batch_1.populations* ./out.replicates
 mv ../BeralpBt/batch_1.sumstats* ./out.replicates
 mv ./plink* ./out.replicates
-mv ../BeralpBt/batch_1.structure.tsv ./out.noreplicates/
 
 
 ##### Copy results to 2R folder:
 
 cp -r ~/../../Volumes/TO_GO_1/BerL_1_2_3/1stacks/stacks/PopSamples/PopSamples_m3/Popsouts_RselecStructure ~/../../Volumes/TO_GO_1/BerL_1_2_3/3Berberis_phylogeo/data.out/PopSamples_m3
+
+YOU NEED TO DELETE FIRST LINE OF FILE IN ORDER TO STRUCTURE TO BE ABLE TO READ THE INPUTFILE, AT LEAST IN THE FRONT END SOFTWARE, CHECK IF NOT NECESARY IN COMMAND LINE
 

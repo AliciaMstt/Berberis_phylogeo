@@ -1,0 +1,58 @@
+# !/bin/sh
+#
+## This script calls the R and perl scripts to generate a fasta file, blast it against NCBI
+#
+#
+# Go to WD
+cd ~/../../Volumes/TO_GO_1/BerL_1_2_3/3Berberis_phylogeo
+#
+### Convert export SNP.SNPs consensus seqs as FASTA
+R CMD BATCH /bin/Berberisphylogeo_generatefasta.r
+#
+### BLAST tools from Biophyton (biophyton.org) 
+# Use the nt database and restrict search to green plants
+#
+data.out/PopSamples_m3/PopSamples_BeralpBt_m3.FASTA 
+
+data.out/PopSamples_m3/PopSamples_BeralpBt_m3_Blastout.tx 
+
+
+-d nt -b blastn -e viridiplantae[organism] -t 3 
+
+>>> from Bio.Blast import NCBIWWW
+>>> from Bio import SeqIO
+>>> record = SeqIO.read("m_cold.fasta", format="fasta")
+>>> result_handle = NCBIWWW.qblast("blastn", "nt", record.format("fasta"))
+
+
+from Bio.Blast import NCBIWWW
+result_handle = NCBIWWW.qblast("blastn", "nt", "8332116")
+save_file = open("my_blast.xml", "w")
+save_file.write(result_handle.read())
+save_file.close()
+result_handle.close()
+
+
+module add blast/ncbi-2.2.29+
+
+blastn -db nt -remote -query PopSamples_BeralpBt_short_test.FASTA -entrez_query viridiplantae[organism] -max_target_seqs 1 -out blast_test.out -outfmt "7 qacc qcovs pident sscinames staxids stitle"
+
+stitle means Subject Title
+
+qcovs means Query Coverage Per Subject
+
+pident means Percentage of identical matches
+
+staxids means unique Subject Taxonomy ID(s)
+
+sscinames means unique Subject Scientific Name(s)
+ 
+
+remote search? 
+
+
+max_target_seqs
+
+
+
+blastn -db nt -remote -query PopSamples_BeralpBt_short_test.FASTA -out blast_test.outnt
