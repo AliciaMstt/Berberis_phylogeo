@@ -1,6 +1,6 @@
 read.sumstats <- function(file, npop, popNames){
   ### Function to read the Stacks populations output file batch_1.sumstats.tsv and add PopNames to it
-  # file = path to batch_1.sumstats_summary.tsv file
+  # file = path to batch_1.sumstats.tsv file
   # npop = number of populations (PopID field) the datafile contains
   # popNames = vector with population names in the same order than PopID in the file 
   
