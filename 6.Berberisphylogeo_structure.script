@@ -1,0 +1,85 @@
+##### This script details Settings and paths used to run Structure
+
+
+For data w/o Za and Out
+========================
+
+Prepare working directory and input files
+------------------------------------------
+
+Go to where data is
+
+´´´
+cd ~/../../Volumes/TO_GO_1/BerL_1_2_3/3Berberis_phylogeo/data.out/PopSamples_m3/wo_ZaOut/
+´´´
+
+Prepare Structure working directory to keep Structure files in separate folder ready for runs.
+
+´´´
+mkdir ./out.noreplicates/Structure
+´´´
+
+Copy input file:
+´´´
+cp  ./out.noreplicates/batch_1.structure.tsv ./out.noreplicates/Structure/batch_1.structure.tsv
+´´´
+
+Structure graphic interface was then used to create a Structure project and to generate the mainparams (mainparams*) files for each K and desired settings. This was run inside the Structure WD in one folder per each set of settings explored.
+
+
+Run length and paremeter exploration 
+--------------------------------------
+
+
+#### Exploratory runs
+
+We first examined the run length using the admixture model, correlated allele frequencies, lambda set to 1, a burn-in period of 100,000 and 1,000,000 repetitions 
+ and the rest of the settings as default
+
+´´´
+bsub < structure_explo_test.job 
+bsub < structure_explo_test_2.job
+´´
+
+Iterations takes around 8 Mbytes for memory and 157 Mbytes of swap, so it is possible to run it in a normal memory node and without the -x parameter
+
+
+#BSUB -R "rusage[mem=4000]"
+
+
+#### Estimate lambda 
+
+We estimated lambda setting K=1, a burn-in period of 100,000 and 1,000,000 repetitions, the admixture model and both the independent and correlated allele frequencies. 
+
+´´´
+bsub < structure_infer_lbd.job
+´´´
+
+
+
+
+
+
+Admixture model
+Correlated allele frequencies --> not sure, maybe B.alpina not that closely related, specially considering Za
+
+
+Let Structure estimate lambda with K=1 to start because our data is SNP with rare vakyes 
+
+Burning lenght
+
+STRUCTURE was run assuming an admixture model without any prior population assingment . Because of SNP data include many rare alleles, we first let the program estimate lambda with K=1 and then fix it to the obtained value (0.38) for all the subsquent runs.  
+
+To infer the optimal K we followed Evanno et al. (2005) method, which uses an ad hoc approach based on plotting the second-order rate of change in ln Pr(X|K) for successive Ks (ΔK) against a range of K values, and selecting the true K based on where the maximal value of this distribution occurs.
+
+We observed but used a conservative burn-in period of 100,000 and 1,000,000 iterations
+
+20 replicates for each K
+
+
+We followed Gilbert et al recomendations for data storage and provide input output files as part of the data repository.
+
+20 replicates
+
+
+structure/2.3.4
