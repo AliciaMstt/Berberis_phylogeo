@@ -1,41 +1,86 @@
-# !/bin/sh
-#
-## This script calls the R and perl scripts to generate a fasta file, blast it against NCBI
-#
-#
-# Go to WD
+Blasting 
+========
+
+
+### Convert SNP.SNPs consensus seqs to FASTA format 
+
+The consensus sequences of the SNP.SNPs matrix produced by the `1.PopSamples_PostCleaning.r` can be exported to Fasta with the script:
+
+```
 cd ~/../../Volumes/TO_GO_1/BerL_1_2_3/3Berberis_phylogeo
-#
-### Convert export SNP.SNPs consensus seqs as FASTA
 R CMD BATCH /bin/Berberisphylogeo_generatefasta.r
-#
-### BLAST tools from Biophyton (biophyton.org) 
-# Use the nt database and restrict search to green plants
-#
-data.out/PopSamples_m3/PopSamples_BeralpBt_m3.FASTA 
+```
 
-data.out/PopSamples_m3/PopSamples_BeralpBt_m3_Blastout.tx 
+### Run blasting job
+
+Blast+ is a module by NCBI that takes a given DNA sequence and looks to which other DNA sequence in a given database it is more similar to. We run this locally, as blast+ allows this if NCBI databases are downloaded. This is faster and allows to parse the output more easily. See the manual at http://www.ncbi.nlm.nih.gov/books/NBK1763/#_CmdLineAppsManual_Quick_start_ for details.
 
 
--d nt -b blastn -e viridiplantae[organism] -t 3 
-
->>> from Bio.Blast import NCBIWWW
->>> from Bio import SeqIO
->>> record = SeqIO.read("m_cold.fasta", format="fasta")
->>> result_handle = NCBIWWW.qblast("blastn", "nt", record.format("fasta"))
+The script update_blastdb.pl that comes with blast+ can be used to download the desired databases already formatted for blast. We downloaded "nt" (nucleotide) and "taxdb" (taxonomy). The BLAST database contains only the taxid (an integer) for each entry, and the taxonomy database allow BLAST to retrieve the scientific name etc. from a taxid so The BLAST taxonomy database is required in order to print the scientific name, common name, blast name etc as part of the BLAST report.
 
 
-from Bio.Blast import NCBIWWW
-result_handle = NCBIWWW.qblast("blastn", "nt", "8332116")
-save_file = open("my_blast.xml", "w")
-save_file.write(result_handle.read())
-save_file.close()
-result_handle.close()
+Our blasting job looks like:
+
+
+```
+#!/bin/sh
+#BSUB -q long
+#BSUB -J blast_test
+#BSUB -B 
+#BSUB -N 
+#BSUB -oo blast_test.out
+#BSUB -eo blast_test.out
+. /etc/profile
 
 
 module add blast/ncbi-2.2.29+
 
-blastn -db nt -remote -query PopSamples_BeralpBt_short_test.FASTA -entrez_query viridiplantae[organism] -max_target_seqs 1 -out blast_test.out -outfmt "7 qacc qcovs pident sscinames staxids stitle"
+## Filter low complexity regions using dustmasker
+# Create masking information using dustmasker
+dustmasker -in PopSamples_BeralpBt_short_test.FASTA -infmt fasta -parse_seqids \
+-outfmt maskinfo_asn1_bin -out PopSamples_BeralpBt_short_test_dust.asnb
+
+# Create BLAST database with the masking information
+makeblastdb -in PopSamples_BeralpBt_short_test.FASTA -input_type blastdb -dbtype nucl -parse_seqids \
+ -mask_data PopSamples_BeralpBt_short_test_mask.asnb -out PopSamples_BeralpBt_short_test -title \
+ "PopSamples_BeralpBt_short_test"
+
+
+# Run blast
+
+blastn -db nt -query PopSamples_BeralpBt_short_test.FASTA  -word_size 11 -evalue 10 -gapopen 5 -gapextend 2 -best_hit_overhang 0.1 -best_hit_score_edge 0.1 -max_target_seqs 1 -out blast_test.out -outfmt "7 qacc evalue score qcovs pident length staxids sscinames stitle"
+
+
+# Blastes data against green plant nucleotide database 
+# word_size Length of initial exact match.
+# gapopen Cost to open a gap.
+# gapoextend Cost to extend a gap 
+
+
+### Write it as tabular format with comments (7), 
+# qacc means Query accesion
+# evalue means Expect value
+# bitscore means Bit score (normalized raw score that considers the search space)
+# qcovs means Query Coverage Per Subject
+# length means Alignment length
+# pident means Percentage of identical matches
+# staxids means unique Subject Taxonomy ID(s), separated by a ';'(in numerical order)
+# sscinames means unique Subject Scientific Name(s), separated by a ';'
+# stitle means Subject Title
+
+
+```
+
+-entrez_query viridiplantae[organism]
+
+```
+bsub > 
+```
+
+pfs/data/datasets/blastdb:
+
+
+
 
 stitle means Subject Title
 
