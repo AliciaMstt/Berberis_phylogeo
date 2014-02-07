@@ -16,7 +16,11 @@ R CMD BATCH /bin/Berberisphylogeo_generatefasta.r
 Blast+ is a module by NCBI that takes a given DNA sequence and looks to which other DNA sequence in a given database it is more similar to. We run this locally, as blast+ allows this if NCBI databases are downloaded. This is faster and allows to parse the output more easily. See the manual at http://www.ncbi.nlm.nih.gov/books/NBK1763/#_CmdLineAppsManual_Quick_start_ for details.
 
 
-The script update_blastdb.pl that comes with blast+ can be used to download the desired databases already formatted for blast. We downloaded "nt" (nucleotide) and "taxdb" (taxonomy). The BLAST database contains only the taxid (an integer) for each entry, and the taxonomy database allow BLAST to retrieve the scientific name etc. from a taxid so The BLAST taxonomy database is required in order to print the scientific name, common name, blast name etc as part of the BLAST report.
+The script update_blastdb.pl that comes with blast+ can be used to download the desired databases already formatted for blast. We downloaded "nt" (nucleotide) and "taxdb" (taxonomy). Notice that the BLAST taxonomy database is required in order to print the scientific name, common name, blast name etc as part of the BLAST report. 
+
+The -entrez_query flag is only available if using blast+ remotely, so to be able to restric the query to green plants in the nt database we used the -gilist option with the file `/docs/greenplants.gi.txt`. This file was created by searching on the webiterface (http://www.ncbi.nlm.nih.gov/nuccore/) of the Nucleotide database with: `viridiplantae[organism] NOT wgs[filter] NOT htg[div] NOT pat[div] NOT sts[div]` and saving the output as GI LIST.
+
+
 
 
 Our blasting job looks like:
@@ -41,13 +45,17 @@ dustmasker -in PopSamples_BeralpBt_short_test.FASTA -infmt fasta -parse_seqids \
 -outfmt maskinfo_asn1_bin -out PopSamples_BeralpBt_short_test_dust.asnb
 
 # Create BLAST database with the masking information
-makeblastdb -in PopSamples_BeralpBt_short_test.FASTA -input_type blastdb -dbtype nucl -parse_seqids \
- -mask_data PopSamples_BeralpBt_short_test_mask.asnb -out PopSamples_BeralpBt_short_test -title \
- "PopSamples_BeralpBt_short_test"
+makeblastdb -in PopSamples_BeralpBt_short_test.FASTA -input_type fasta -dbtype nucl -parse_seqids \
+ -mask_data PopSamples_BeralpBt_short_test_dust.asnb -out PopSamples_BeralpBt_short_test -title \
+ "PopSamples_BeralpBt_short_testdusted"
 
 
-# Run blast
+## Run blast
 
+# tell blast where to look for databases 
+export BLASTDB=/gpfs/data/datasets/blastdb/:/gpfs/data/datasets/blastdb/nt/:/gpfs/bio/bxh10nyu/blast_test/:/gpfs/data/datasets/blastdb/taxdb
+
+# blast
 blastn -db nt -query PopSamples_BeralpBt_short_test.FASTA  -word_size 11 -evalue 10 -gapopen 5 -gapextend 2 -best_hit_overhang 0.1 -best_hit_score_edge 0.1 -max_target_seqs 1 -out blast_test.out -outfmt "7 qacc evalue score qcovs pident length staxids sscinames stitle"
 
 
@@ -78,6 +86,9 @@ bsub >
 ```
 
 pfs/data/datasets/blastdb:
+
+
+
 
 
 
