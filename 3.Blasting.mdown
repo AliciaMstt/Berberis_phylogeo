@@ -1,0 +1,43 @@
+Blasting 
+========
+
+
+### Convert SNP.SNPs consensus seqs to FASTA format 
+
+The consensus sequences of the SNP.SNPs matrix produced by the `1.PopSamples_PostCleaning.r` can be exported to Fasta using the custom R function **tsv2Fasta()** in the following way:
+
+```
+3Berberis_phylogeo$
+R 
+WD<-getwd()
+# Call function
+source("bin/tsv2Fasta.R")
+# Run funtion with data
+tsv2Fasta(tsvfile=paste0(WD,"/data.out/PopSamples_m3/PopSamples_BeralpBt_m3.SNP.SNPs"), 
+          outputfile=paste0(WD,"/data.out/PopSamples_m3/PopSamples_BeralpBt_m3.FASTA"), len=83)
+quit(save="no")
+```
+
+Then copy data to `/blast` directory
+
+```
+cp data.out/PopSamples_m3/PopSamples_BeralpBt_m3.FASTA ./blast
+```
+
+### Run blasting job
+
+Blast+ is a module by NCBI that takes a given DNA sequence and looks to which other DNA sequence in a given database it is more similar to. We run this locally, as blast+ allows this if NCBI databases are downloaded. This is faster and allows to parse the output more easily. See the manual at http://www.ncbi.nlm.nih.gov/books/NBK1763/#_CmdLineAppsManual_Quick_start_ for details.
+
+
+The script update_blastdb.pl that comes with blast+ can be used to download the desired databases already formatted for blast. We downloaded "nt" (nucleotide) and "taxdb" (taxonomy). Notice that the BLAST taxonomy database is required in order to print the scientific name, common name, blast name etc as part of the BLAST report. 
+
+The -entrez_query flag is only available if using blast+ remotely, so to be able to restric the query to green plants in the nt database we used the -gilist option with the file `/blast/greenplants.gi.txt`. This file was created by searching on the webiterface (http://www.ncbi.nlm.nih.gov/nuccore/) of the Nucleotide database with: `viridiplantae[organism] NOT wgs[filter] NOT htg[div] NOT pat[div] NOT sts[div]` and saving the output as GI LIST.
+
+The following job blasts data against green plant nucleotide database filtering for lowcomplexity regions. Output is written in tabular format with the infomation: Query accesion, Expect value, Bit score, Query Coverage Per Subject, Alignment length, Percentage of identical matches, Subject Taxonomy ID, Subject Scientific Name and Subject Title, in that order.
+
+Run job:
+
+```
+3Berberis_phylogeo/blast$
+bsub < bsub.blastGP.job
+```
