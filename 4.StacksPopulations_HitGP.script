@@ -41,7 +41,7 @@ mkdir -p ../../1stacks/stacks/PopSamples/PopSamples_m3/HitGP/$a
 	cp ../../3Berberis_phylogeo/data.out/PopSamples_m3/HitGP/PopSamples_BeralpBt_m3_blastGP${a}_whitelist.tsv ../../1stacks/stacks/PopSamples/PopSamples_m3/HitGP/$a/$i
 	#
 	# For the Population Maps:
-	cp ../../3Berberis_phylogeo/data.out/PopSamples_m3/HitGP/PopSamples_BeralpBt_m3_blastGP_Pop_Map* ../../1stacks/stacks/PopSamples/PopSamples_m3/BeralpBt/ 
+	cp ../../3Berberis_phylogeo/data.out/PopSamples_m3/HitGP/PopSamples_BeralpBt_m3_blastGP_PopMap* ../../1stacks/stacks/PopSamples/PopSamples_m3/BeralpBt/ 
 	# Create folders for output
 	mkdir -p ../../1stacks/stacks/PopSamples/PopSamples_m3/HitGP/$a/$i/out.replicates 
 	mkdir -p ../../1stacks/stacks/PopSamples/PopSamples_m3/HitGP/$a/$i/out.noreplicates 
@@ -77,7 +77,7 @@ cd ${a}
 	#
 	## For data EXLUDING replicates
 	# Run populations
-	populations -P ../../../BeralpBt/ -M ../../../BeralpBt/PopSamples_BeralpBt_m3_blastGP_Pop_Map_norep_$i.tsv -b 1 -p 7 -f p_value --plink --structure --write_single_snp -W ./PopSamples_BeralpBt_m3_blastGP${a}_whitelist.tsv
+	populations -P ../../../BeralpBt/ -M ../../../BeralpBt/PopSamples_BeralpBt_m3_blastGP_PopMap_norep_$i.tsv -b 1 -p 7 -f p_value --plink --structure --write_single_snp -W ./PopSamples_BeralpBt_m3_blastGP${a}_whitelist.tsv
 	#
 	# Run plink to recode .ped to .raw plink file. This reads the plink.ped file and creates a plink.raw file in the WD
 plink --file ../../../BeralpBt/batch_1.plink --allow-no-sex --recodeA
@@ -92,7 +92,7 @@ plink --file ../../../BeralpBt/batch_1.plink --allow-no-sex --recodeA
 	#
 	## For data INCLUDING replicates
 	# Run populations
-	populations -P ../../../BeralpBt/ -M ../../../BeralpBt/PopSamples_BeralpBt_m3_blastGP_Pop_Map_withrep_$i.tsv -b 1 -p 7 -f p_value --plink --structure --write_single_snp -W ./PopSamples_BeralpBt_m3_blastGP${a}_whitelist.tsv
+	populations -P ../../../BeralpBt/ -M ../../../BeralpBt/PopSamples_BeralpBt_m3_blastGP_PopMap_withrep_$i.tsv -b 1 -p 7 -f p_value --plink --structure --write_single_snp -W ./PopSamples_BeralpBt_m3_blastGP${a}_whitelist.tsv
 	# Run plink to recode .ped to .raw plink file. This reads the plink.ped file and creates a plink.raw file in the WD
 	plink --file ../../../BeralpBt/batch_1.plink --allow-no-sex --recodeA
 	#
@@ -125,7 +125,7 @@ cd ${a}
 	#
 	## For data EXLUDING replicates
 	# Run populations
-	populations -P ../../../BeralpBt/ -M ../../../BeralpBt/PopSamples_BeralpBt_m3_blastGP_Pop_Map_norep_$i.tsv -b 1 -p 7 -f p_value --plink --phylip --phylip_var -W ./PopSamples_BeralpBt_m3_blastGP${a}_whitelist.tsv
+	populations -P ../../../BeralpBt/ -M ../../../BeralpBt/PopSamples_BeralpBt_m3_blastGP_PopMap_norep_$i.tsv -b 1 -p 7 -f p_value --plink --phylip --phylip_var -W ./PopSamples_BeralpBt_m3_blastGP${a}_whitelist.tsv
 	#
 	# Run plink to recode .ped to .raw plink file. This reads the plink.ped file and creates a plink.raw file in the WD
 plink --file ../../../BeralpBt/batch_1.plink --allow-no-sex --recodeA
@@ -140,7 +140,7 @@ plink --file ../../../BeralpBt/batch_1.plink --allow-no-sex --recodeA
 	#
 	## For data INCLUDING replicates
 	# Run populations
-	populations -P ../../../BeralpBt/ -M ../../../BeralpBt/PopSamples_BeralpBt_m3_blastGP_Pop_Map_withrep_$i.tsv -b 1 -p 7 -f p_value --plink --phylip --phylip_var -W ./PopSamples_BeralpBt_m3_blastGP${a}_whitelist.tsv
+	populations -P ../../../BeralpBt/ -M ../../../BeralpBt/PopSamples_BeralpBt_m3_blastGP_PopMap_withrep_$i.tsv -b 1 -p 7 -f p_value --plink --phylip --phylip_var -W ./PopSamples_BeralpBt_m3_blastGP${a}_whitelist.tsv
 	# Run plink to recode .ped to .raw plink file. This reads the plink.ped file and creates a plink.raw file in the WD
 	plink --file ../../../BeralpBt/batch_1.plink --allow-no-sex --recodeA
 	#
@@ -157,17 +157,6 @@ plink --file ../../../BeralpBt/batch_1.plink --allow-no-sex --recodeA
 cd ..	
 done
 
-
-
-
-
-
-
-
-
-
-
-
-	## Copy results to analyses folder:
-	cp -r ../../$a ../../../../../../../3Berberis_phylogeo/data.out/PopSamples_m3/HitGP/
+## Copy results to analyses folder:
+cp -r ./ ../../../../../3Berberis_phylogeo/data.out/PopSamples_m3/HitGP/
 	
