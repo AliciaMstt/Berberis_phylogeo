@@ -71,13 +71,13 @@ nrow(cpberberis)
 #### Save white list of loci
 
 # HitGP
-write(hitGP$qacc, file= paste0(WD,outfolder,"HitGP",  bloutname, "HitGP_whitelist.tsv"), ncolumns = 1)
+write(hitGP$qacc, file= paste0(WD,outfolder,"HitGP/",  bloutname, "HitGP_whitelist.tsv"), ncolumns = 1)
 
 # Hit mtDNA
-write(mtloci$qacc, file= paste0(WD,outfolder,"HitGP",  bloutname, "mtDNA_whitelist.tsv"), ncolumns = 1)
+write(mtloci$qacc, file= paste0(WD,outfolder,"HitGP/",  bloutname, "mtDNA_whitelist.tsv"), ncolumns = 1)
 
 # Hit cpDNA
-write(cploci$qacc, file= paste0(WD,outfolder,"HitGP",  bloutname, "cpDNA_whitelist.tsv"), ncolumns = 1)
+write(cploci$qacc, file= paste0(WD,outfolder,"HitGP/",  bloutname, "cpDNA_whitelist.tsv"), ncolumns = 1)
 
 
 
@@ -89,13 +89,13 @@ write(cploci$qacc, file= paste0(WD,outfolder,"HitGP",  bloutname, "cpDNA_whiteli
 whitePopMap(drop.rep = TRUE, tsv= paste0(WD,outfolder,"PopSamples_BeralpBt_m3.SNP.SNPs"), 
   writedirectory= paste0(WD,outfolder, "HitGP/"), matinfo=matinfo, PopOrder=PopOrder)
 # Rename output file to include BerAll name
-system(paste0("mv data.out/PopSamples_m3/HitGP/PopSamples_BeralpBt_m3.SNP.SNPs_PopMap_norep.tsv data.out/PopSamples_m3/HitGP/",bloutname, "_Pop_Map_norep_BerAll.tsv"))
+system(paste0("mv data.out/PopSamples_m3/HitGP/PopSamples_BeralpBt_m3.SNP.SNPs_Pop_Map_norep.tsv data.out/PopSamples_m3/HitGP/",bloutname, "_Pop_Map_norep_BerAll.tsv"))
 
 # Create population map ALL samples, INCLUDING replicates
 whitePopMap(drop.rep = FALSE, tsv= paste0(WD,outfolder,"PopSamples_BeralpBt_m3.SNP.SNPs"), 
   writedirectory= paste0(WD,outfolder, "HitGP/"), matinfo=matinfo, PopOrder=PopOrder)
 # Rename output file to include BerAll name
-system(paste0("mv data.out/PopSamples_m3/HitGP/PopSamples_BeralpBt_m3.SNP.SNPs_PopMap_withrep.tsv data.out/PopSamples_m3/HitGP/",bloutname, "_Pop_Map_withrep_BerAll.tsv"))
+system(paste0("mv data.out/PopSamples_m3/HitGP/PopSamples_BeralpBt_m3.SNP.SNPs_Pop_Map_withrep.tsv data.out/PopSamples_m3/HitGP/",bloutname, "_Pop_Map_withrep_BerAll.tsv"))
 
 #### BerwoOut
 # Create population map w/o Za and Out samples, EXCLUDING replicates
@@ -104,7 +104,7 @@ x<-read.delim(file= paste0(WD,outfolder, "HitGP/PopSamples_BeralpBt_m3_blastGP_P
 s<-grep("Out", x[,1], invert= TRUE)
 #save those samples
 x<-x[s,]
-write.table(x, file= paste0(WD,outfolder, "HitGP/PopSamples_BeralpBt_m3_blastGP_PopMap_norep_BerwoOut.tsv"),
+write.table(x, file= paste0(WD,outfolder, "HitGP/PopSamples_BeralpBt_m3_blastGP_Pop_Map_norep_BerwoOut.tsv"),
   sep = "\t",
   row.names =FALSE, col.names=FALSE,
   quote=FALSE)
@@ -115,7 +115,7 @@ x<-read.delim(file= paste0(WD, outfolder, "HitGP/PopSamples_BeralpBt_m3_blastGP_
 s<-grep("Out", x[,1], invert= TRUE)
 #save those samples
 x<-x[s,]
-write.table(x, file= paste0(WD, outfolder, "HitGP/PopSamples_BeralpBt_m3_blastGP_PopMap_withrep_BerwoOut.tsv"),
+write.table(x, file= paste0(WD, outfolder, "HitGP/PopSamples_BeralpBt_m3_blastGP_Pop_Map_withrep_BerwoOut.tsv"),
   sep = "\t",
   row.names =FALSE, col.names=FALSE,
   quote=FALSE)
@@ -128,7 +128,7 @@ x<-read.delim(file= paste0(WD,outfolder, "HitGP/PopSamples_BeralpBt_m3_blastGP_P
 s<-grep("Za|Out", x[,1], invert= TRUE)
 #save those samples
 x<-x[s,]
-write.table(x, file= paste0(WD,outfolder, "HitGP/PopSamples_BeralpBt_m3_blastGP_PopMap_norep_woZaOut.tsv"),
+write.table(x, file= paste0(WD,outfolder, "HitGP/PopSamples_BeralpBt_m3_blastGP_Pop_Map_norep_woZaOut.tsv"),
   sep = "\t",
   row.names =FALSE, col.names=FALSE,
   quote=FALSE)
@@ -139,7 +139,7 @@ x<-read.delim(file= paste0(WD, outfolder, "HitGP/PopSamples_BeralpBt_m3_blastGP_
 s<-grep("Za|Out", x[,1], invert= TRUE)
 #save those samples
 x<-x[s,]
-write.table(x, file= paste0(WD, outfolder, "HitGP/PopSamples_BeralpBt_m3_blastGP_PopMap_withrep_woZaOut.tsv"),
+write.table(x, file= paste0(WD, outfolder, "HitGP/PopSamples_BeralpBt_m3_blastGP_Pop_Map_withrep_woZaOut.tsv"),
   sep = "\t",
   row.names =FALSE, col.names=FALSE,
   quote=FALSE)
@@ -151,7 +151,7 @@ x<-read.delim(file= paste0(WD,outfolder, "HitGP/PopSamples_BeralpBt_m3_blastGP_P
 s<-grep("Za|Out|An", x[,1], invert= TRUE)
 #save those samples
 x<-x[s,]
-write.table(x, file= paste0(WD,outfolder, "HitGP/PopSamples_BeralpBt_m3_blastGP_PopMap_norep_BerSS.tsv"),
+write.table(x, file= paste0(WD,outfolder, "HitGP/PopSamples_BeralpBt_m3_blastGP_Pop_Map_norep_BerSS.tsv"),
   sep = "\t",
   row.names =FALSE, col.names=FALSE,
   quote=FALSE)
@@ -162,7 +162,7 @@ x<-read.delim(file= paste0(WD, outfolder, "HitGP/PopSamples_BeralpBt_m3_blastGP_
 s<-grep("Za|Out|An", x[,1], invert= TRUE)
 #save those samples
 x<-x[s,]
-write.table(x, file= paste0(WD, outfolder, "HitGP/PopSamples_BeralpBt_m3_blastGP_PopMap_withrep_BerSS.tsv"),
+write.table(x, file= paste0(WD, outfolder, "HitGP/PopSamples_BeralpBt_m3_blastGP_Pop_Map_withrep_BerSS.tsv"),
   sep = "\t",
   row.names =FALSE, col.names=FALSE,
   quote=FALSE)

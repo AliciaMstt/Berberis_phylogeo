@@ -11,8 +11,8 @@
 # * AllLoci: all RAD loci
 # * HitGP: loci that positively blasted against green plants
 # * NohitGP: loci that didn't blasted against green plants
-
-
+#
+#
 ###################################### AllLoci
 #
 ###
@@ -54,7 +54,6 @@ done
 # Filter input so that to process a locus it must be present in -p of the populations 
 # export to Structure and plink format, recording only the first SNP per locus
 # Do the same with data including and excluding replicates (see output in out.replicates and out.noreplicates)
-#
 #
 for i in "BerAll" "BerwoOut" "woZaOut" "BerSS"; do
 ## Go to WD
