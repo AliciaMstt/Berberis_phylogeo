@@ -55,9 +55,10 @@ done
 # export to Structure and plink format, recording only the first SNP per locus
 # Do the same with data including and excluding replicates (see output in out.replicates and out.noreplicates)
 #
+cd ../../1stacks/stacks/PopSamples/PopSamples_m3/AllLoci/
 for i in "BerAll" "BerwoOut" "woZaOut" "BerSS"; do
 ## Go to WD
-cd ../../1stacks/stacks/PopSamples/PopSamples_m3/AllLoci/$i/
+cd $i/
 # Delete posible .fst outs from previous runs
 rm ../../BeralpBt/batch_1.fst_summary.tsv
 #
@@ -94,6 +95,7 @@ mv ../../BeralpBt/batch_1.structure.tsv ./out.replicates/
 #
 ## Copy results to analyses folder:
 cp -r ../$i ../../../../../../3Berberis_phylogeo/data.out/PopSamples_m3/AllLoci/
+cd ..
 done
 #
 #

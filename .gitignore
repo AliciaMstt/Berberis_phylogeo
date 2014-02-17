@@ -4,3 +4,5 @@
 *.Rout
 
 .pversion
+
+*.html
