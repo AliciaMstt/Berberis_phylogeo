@@ -21,10 +21,12 @@ Inside there is a directory for each set of loci analysed. Namely:
 
 Each of them contains the directories of the subset of samples used to run Structure Independently. Namely:
 
-* BerwoOut: all populations from Berberis alpina (including Za), Berberis moranensis (An population) but EXCLUDING outgroup (B. trifolia)
 * woZaOut: excluding samples from El Zamorano population (Za) and Berberis trifolia (outgroup)
 * BerSS: Berberis alpina sensu stricto, populations (Aj, Iz, Ma, Pe, Tl, To)
 
+
+Run fastSTRUCTURE
+======================
 
 
 AllLoci
@@ -59,34 +61,6 @@ quit(save=(no))
 
 
 ### Run Analyses and plot
-
-
-#### BerwoOut
-
-Run fastSTRUCTURE with a range of values of K with the **simple prior** and 50 repetitions. 
-
-```
-AllLoci$
-cd BerwoOut
-bsub < bsub.fastSTRUCTURE_BerwoOut_simplerep.job
-```
-
-Results will be saved in the repruns directory. The number i in *rep_i corresponds to the repetition, and the number k in *rep_i.k correspodns to the value of k tested. 
-
-You can check the output summary in [fastSTRUCT_BerwoOut_simplerep-%j.out](./fastSTRUCTURE/AllLoci/BerwoOut/fastSTRUCT_BerwoOut_simplere-%j.out). It contains the last tree lines of the *log files for each repetition and K, and the results of running the model complexity selection algoritm for each K. 
-
-
-The model complexity selected by simple prior where K=2 and K=3. To detect more subtle structure run fasSTRUCTURE with the **logistic prior** and values similar those found for the simple. In this case run with K= 2, 3 with 30 repetitions.
-
-```
-AllLoci/BerwoOut$
-bsub < bsub.fastSTRUCTURE_BerwoOut_logisticrep.job
-```
-
-Results will be saved in the repruns directory. The number i in *rep_i corresponds to the repetition, and the number k in *rep_i.k correspodns to the value of k tested. 
-
-You can check the output summary in [fastSTRUCT_BerwoOut_logisticrep-%j.out](./fastSTRUCTURE/AllLoci/BerwoOut/fastSTRUCT_BerwoOut_logisticrep-%j.out). It contains the last tree lines of the *log files for each repetition and K, and the results of running the model complexity selection algoritm for each K. 
-
 
 
 #### woZaOut
@@ -147,13 +121,6 @@ You can check the output summary in [fastSTRUCT_BerSS_logisticrep-%j.out](./fast
 
 
 
-
-COPY DATA BACK TO HD FROM CLUSTER
-
-
-
-
-
 HitGP
 ------------
 
@@ -188,34 +155,6 @@ quit(save="no")
 ### Run Analyses and plot
 
 
-#### BerwoOut
-
-Run fastSTRUCTURE with a range of values of K with the **simple prior** and 50 repetitions. 
-
-```
-HitGP$
-cd BerwoOut
-bsub < bsub.fastSTRUCTURE_BerwoOut_simplerep.job
-```
-
-Results will be saved in the repruns directory. The number i in *rep_i corresponds to the repetition, and the number k in *rep_i.k correspodns to the value of k tested. 
-
-You can check the output summary in [fastSTRUCT_BerwoOut_simplerep-%j.out](./fastSTRUCTURE/HitGP/BerwoOut/fastSTRUCT_BerwoOut_simplere-%j.out). It contains the last tree lines of the *log files for each repetition and K, and the results of running the model complexity selection algoritm for each K. 
-
-
-The model complexity selected by simple prior where K=XXXXXX. To detect more subtle structure run fasSTRUCTURE with the **logistic prior** and values similar those found for the simple. In this case run with K= XXXXXXXXXXX with 30 repetitions.
-
-```
-HitGP/BerwoOut$
-bsub < bsub.fastSTRUCTURE_BerwoOut_logisticrep.job
-```
-
-Results will be saved in the repruns directory. The number i in *rep_i corresponds to the repetition, and the number k in *rep_i.k correspodns to the value of k tested. 
-
-You can check the output summary in [fastSTRUCT_BerwoOut_logisticrep-%j.out](./fastSTRUCTURE/HitGP/BerwoOut/fastSTRUCT_BerwoOut_logisticrep-%j.out). It contains the last tree lines of the *log files for each repetition and K, and the results of running the model complexity selection algoritm for each K. 
-
-
-
 #### woZaOut
 
 Run fastSTRUCTURE with a range of values of K with the **simple prior** and 50 repetitions. 
@@ -231,7 +170,7 @@ Results will be saved in the repruns directory. The number i in *rep_i correspon
 You can check the output summary in [fastSTRUCT_woZaOut_simplerep-%j.out](./fastSTRUCTURE/HitGP/woZaOut/fastSTRUCT_woZaOut_simplere-%j.out). It contains the last tree lines of the *log files for each repetition and K, and the results of running the model complexity selection algoritm for each K. 
 
 
-The model complexity selected by simple prior where K=XXXXXXX. To detect more subtle structure run fasSTRUCTURE with the **logistic prior** with K=XXXXXXX and 50 repetitions.
+The model complexity selected by simple prior was K=1 for the model complexity that maximizes marginal likelihood and K= 1,2,3,4 by the model components used to explain structure in data.  To detect more subtle structure run fasSTRUCTURE with the **logistic prior** with K=2,3,4 and 30 repetitions.
 
 ```
 HitGP/woZaOut$
@@ -259,7 +198,7 @@ Results will be saved in the repruns directory. The number i in *rep_i correspon
 You can check the output summary in [fastSTRUCT_BerSS_simplerep-%j.out](./fastSTRUCTURE/HitGP/BerSS/fastSTRUCT_BerSS_simplere-%j.out). It contains the last tree lines of the *log files for each repetition and K, and the results of running the model complexity selection algoritm for each K. 
 
 
-The model complexity selected by simple prior where XXXXXX. To detect more subtle structure run fasSTRUCTURE with the **logistic prior** and values similar those found for the simple. In this case run with K= XXXX and 50 repetitions.
+The model complexity selected by simple prior was K=1 for the model complexity that maximizes marginal likelihood and K= 1,2,3 by the model components used to explain structure in data.  To detect more subtle structure run fasSTRUCTURE with the **logistic prior** with K=2,3 and 30 repetitions.
 
 ```
 HitGP/BerSS$
@@ -273,45 +212,17 @@ You can check the output summary in [fastSTRUCT_BerSS_logisticrep-%j.out](./fast
 
 
 
+Plot output
+======================
 
 
+To plot using *distruct* (Rosenberg, 2004) it is necessary to produce an adecuate input filesbased on the the .meanQ file of the desired K. The script `meanQ2distruct.R` takes the .meanQ file output of fastSTRUCTURE and builds a "population Q-matrix" (*.popq) and "individual Q-matrix" (*.indivq) input files that can be used to plot fastSTRUCTURE outputs for each run. To have in a single plot the results of all the replicate runs used to run fastSTRUCTURE, it is necessary to permute the resulted cluster membership coeffcient matrices so that all replicates have as close a match as possible. This can be done with the software *CLUMPP* (Jakobsson & Rosenberg, 2007), and the output is ready for plot with distruct.  
 
+To run CLUMPP with fastSTRUCTURE output, first prepare the input file with the custom function `meanQ2clumpp.R` which takes a set of meanQ matrices and builds the input file as required for CLUMPP. Then, run CLUMPP using the output of this function as the indfile.  
 
+Run CLUMPP using the opition Method Greedy (M=2) and Greedy option 2 (the best permutation is constructed by greedily aligning runs. A number of input orders specified by repeats are tested and the one that produces the highest H is taken.) with 100000 repeats.
 
-
-
-
-
-
-
-
-
-CLUMPP
-
-Use the script **plotfastSTRUCTURE_woZaOut.r** to recode 
-
-
-
-To plot the output using *distruct* it is necessary to produce an adecuate input filesbased on the the .meanQ file of the desired K. The script `meanQ2distruct.R` takes the .meanQ file output of fastSTRUCTURE and builds a "population Q-matrix" (*.popq) and "individual Q-matrix" (*.indivq) input files to run distruct. After wards this files can be used by distrcut with a line similar to:
-
-```
-./distruct1.1 -K 3 -M 7 -N 59 -p distr_simpleK3.popq -i distr_simpleK3.indvq -b pop_labels -o simple3distructplot.ps
-
-```
-(in most sistems distruct is invoked with ./distruct, but for my Mac I had to compile it independently, therefore I use ./distruct1.1) 
-
-The file `pop_labels` contains the PopID as used to run fastSTRUCTURE. Other drawing parameters are in the file `drawparams`. 
-
-
-The following R script wraps up using `XXXXXXXX` and `distruct` to plot several outputs of fastSTRUCTURE with this and other data:
- 
- 
-```
-../../fastStructurePlots.r
-```
-
-
-
+This process is repeated for the **woZaOut** and **BerSS** datasets for the desired Ks with the Rmark document [fastSTRC_plotting.Rmd](./fastSTRC_plotting.Rmd). Results can be seen in [fastSTRC_plotting.html](./fastSTRC_plotting.html) or directly in the *.ps outputs generated for each dataset and K (saved inside each dataset directory).
 
 
 
