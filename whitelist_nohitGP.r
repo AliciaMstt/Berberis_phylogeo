@@ -49,6 +49,8 @@ NohitGP <- match(x=final$CatalogID, table=hitGP$qacc, nomatch=TRUE)
 x <- NohitGP==1
 NohitGP<-final$CatalogID[x]
 
+## How many loci did not blast against green plants?
+length(NohitGP)
 
 #### Save whitelist of loci 
 # NohitGP
