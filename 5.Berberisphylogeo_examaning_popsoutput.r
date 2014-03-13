@@ -72,13 +72,13 @@ SNPFis.plots<- function (popsumstats){
   # Plot the frequency of the major allele (P)
   plt <- ggplot(data=popsumstats, aes(x=P)) + theme_bw()
   plt1 <- plt + geom_histogram(aes(y =..density..), colour="black", fill="white") +
-    ylab("Percentage of loci") + xlab("SNP Frequency")
+    ylab("Percentage of loci") + xlab("Allele Frequency")
   
   
   # Plot the frequency of the major allele (P) by population
   plt <- ggplot(data=popsumstats, aes(x=P)) + theme_bw()
   plt <- plt + geom_histogram(aes(y =..density..), colour="black", fill="white")  +
-    ylab("Percentage of loci") + xlab("SNP Frequency")
+    ylab("Percentage of loci") + xlab("Allele Frequency")
   plt2 <- plt + facet_wrap(~Pop.Name)
   
   
