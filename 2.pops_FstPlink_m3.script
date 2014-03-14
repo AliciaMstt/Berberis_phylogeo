@@ -74,7 +74,7 @@ mv ./plink* ./out.replicates
 mv ../BeralpBt/batch_1.structure.tsv ./out.noreplicates/
 
 
-##### Copy results to 2R folder:
+##### Copy results to 3Berberis_phylogeo folder:
 
 cp -r ~/../../Volumes/TO_GO_1/BerL_1_2_3/1stacks/stacks/PopSamples/PopSamples_m3/Popsouts_RselecStructure ~/../../Volumes/TO_GO_1/BerL_1_2_3/3Berberis_phylogeo/data.out/PopSamples_m3
 
