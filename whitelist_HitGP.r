@@ -14,8 +14,10 @@ blastoutput = paste0(WD,"/blast/PopSamples_BeralpBt_m3_blastGP.out")
 bloutname<- basename(blastoutput)
 bloutname<- sub(".out", "", bloutname)
 
-### load samples meta information (lane, barcode, pop, etc)
+### load samples meta information (lane, barcode, pop, etc) and list of potetial paralog loci as blacklist
 matinfo = read.delim(paste(WD,"/info/Ber_06oct13.info", sep = ""), header = T)
+potparalogs = read.delim(paste0(WD,"/docs/potentialparalogs"), header= F)
+potparalogs = potparalogs$V1
 
 ## Load custom functions to create population maps:
 source(paste0(WD,"/bin/whitePopMap.R"))
@@ -23,7 +25,7 @@ source(paste0(WD,"/bin/whitePopMap.R"))
 #Define desired population order
 PopOrder <- c(1,2,3,4,9,5,6,7,8)
 
-################ Generate Whitelist_HitPlants with blasted loci
+################ Generate Whitelist_HitPlants with blasted loci excluding paralogs
 
 #### Get blast output data
 hitGP<-read.delim(file=blastoutput,
@@ -41,6 +43,13 @@ colnames(hitGP)<-c("qacc","sacc", "evalue", "bitscore","qcovs", "length", "piden
 # staxids means unique Subject Taxonomy ID(s), separated by a ';'(in numerical order)
 # sscinames means unique Subject Scientific Name(s), separated by a ';'
 # stitle means Subject Title
+
+## Exclude potential paralogs
+#extract blacklisted loci
+all.loci<- hitGP$qacc
+"%w/o%" <- function(x, y) x[!x %in% y]
+noparalogs<- "%w/o%"(all.loci, potparalogs)
+hitGP<-hitGP[hitGP$qacc %in% noparalogs,]
 
 ### How many sequences where recovered?
 nrow(hitGP)
@@ -82,6 +91,8 @@ write(mtloci$qacc, file= paste0(WD,outfolder,"HitGP/",  bloutname, "mtDNA_whitel
 # Hit cpDNA
 write(cploci$qacc, file= paste0(WD,outfolder,"HitGP/",  bloutname, "cpDNA_whitelist.tsv"), ncolumns = 1)
 
+# Hit cpDNA Berberis bealei
+write(cpberberis$qacc, file= paste0(WD,outfolder,"HitGP/",  bloutname, "cpDNABerberis_whitelist.tsv"), ncolumns = 1)
 
 
 ############## Generate Population Maps
