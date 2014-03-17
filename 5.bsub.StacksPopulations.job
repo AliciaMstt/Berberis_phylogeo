@@ -1,0 +1,17 @@
+#!/bin/sh
+#BSUB -q medium
+#BSUB -J StacksPopulationss
+#BSUB -B 
+#BSUB -N 
+#BSUB -oo StacksPopulationss-%j.out
+#BSUB -eo StacksPopulationss-%j.out
+. /etc/profile
+
+
+module add stacks/1.13
+module add plink/1.06
+module add R/2.15.0 
+
+bash 5.StacksPopulations_AllLoci.script
+bash 5.StacksPopulations_HitGP.script
+bash 5.StacksPopulations_NohitGP.script

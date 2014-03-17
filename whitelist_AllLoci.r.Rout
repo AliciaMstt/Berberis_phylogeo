@@ -1,8 +1,8 @@
 
-R version 2.15.1 (2012-06-22) -- "Roasted Marshmallows"
+R version 2.15.0 (2012-03-30)
 Copyright (C) 2012 The R Foundation for Statistical Computing
 ISBN 3-900051-07-0
-Platform: x86_64-apple-darwin9.8.0/x86_64 (64-bit)
+Platform: x86_64-unknown-linux-gnu (64-bit)
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
 You are welcome to redistribute it under certain conditions.
@@ -21,17 +21,19 @@ Type 'q()' to quit R.
 > rm(list = ls())
 > 
 > # Define WD and other directories
-> WD<-"/Volumes/TO_GO_1/BerL_1_2_3/3Berberis_phylogeo" 
+> #WD<-"/Volumes/TO_GO_1/BerL_1_2_3/3Berberis_phylogeo" 
+> WD<-"~/BerL_1_2_3/3Berberis_phylogeo"
 > setwd(WD) 
 > list.files()
-[1] "bin"           "data.in"       "data.out"      "docs"         
-[5] "fastSTRUCTURE" "info"          "README"        "wo_ZaOut"     
+[1] "bin"      "blast"    "data.out" "docs"     "info"    
 > 
 > outfolder = "/data.out/PopSamples_m3/" # tvsdirectory, where the tsv SNP matrices are
 > 
 > 
-> ### load samples meta information (lane, barcode, pop, etc)
+> ### load samples meta information (lane, barcode, pop, etc) and list of potetial paralog loci as blacklist
 > matinfo = read.delim(paste(WD,"/info/Ber_06oct13.info", sep = ""), header = T)
+> potparalogs = read.delim(paste0(WD,"/docs/potentialparalogs"), header= F)
+> potparalogs = potparalogs$V1
 > 
 > ## Load custom functions to create white list of loci and population maps:
 > source(paste0(WD,"/bin/whiteRADlist.R"))
@@ -43,7 +45,7 @@ Type 'q()' to quit R.
 > #### BerAll
 > # Run whiteRAD list for m3
 > whiteRADlist(tsv= paste0(WD,outfolder,"PopSamples_BeralpBt_m3.SNP.SNPs"), 
-+   writedirectory= paste0(WD,outfolder, "AllLoci/"))
++   writedirectory= paste0(WD,outfolder, "AllLoci/"), blacklist=potparalogs)
 >   
 > # Create population map ALL samples, EXCLUDING replicates
 > whitePopMap(drop.rep = TRUE, tsv= paste0(WD,outfolder,"PopSamples_BeralpBt_m3.SNP.SNPs"), 
@@ -137,4 +139,4 @@ Type 'q()' to quit R.
 > 
 > proc.time()
    user  system elapsed 
-  1.999   0.084   2.511 
+  1.577   0.094   2.109 

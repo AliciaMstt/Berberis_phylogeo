@@ -110,7 +110,7 @@ cd ..
 done	
 #
 #
-## For cpDNA, mtDNA (no do this step you need stacks/1.09 as the version 1.01 does not allow fasta export)
+## For cpDNA, mtDNA (no do this step you need >stacks/1.09 as the version 1.01 does not allow fasta export)
 # First loop
 for a in "cpDNA" "mtDNA"; do
 # Go to grouping directory

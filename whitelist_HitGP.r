@@ -1,7 +1,8 @@
 rm(list = ls())
  
 # Define WD and other directories
-WD<-"/Volumes/TO_GO_1/BerL_1_2_3/3Berberis_phylogeo" 
+#WD<-"/Volumes/TO_GO_1/BerL_1_2_3/3Berberis_phylogeo" 
+WD<-"~/BerL_1_2_3/3Berberis_phylogeo"
 setwd(WD) 
 list.files()
 
@@ -89,10 +90,8 @@ write(hitGP$qacc, file= paste0(WD,outfolder,"HitGP/",  bloutname, "HitGP_whiteli
 write(mtloci$qacc, file= paste0(WD,outfolder,"HitGP/",  bloutname, "mtDNA_whitelist.tsv"), ncolumns = 1)
 
 # Hit cpDNA
-write(cploci$qacc, file= paste0(WD,outfolder,"HitGP/",  bloutname, "cpDNA_whitelist.tsv"), ncolumns = 1)
+write(cpberberis$qacc, file= paste0(WD,outfolder,"HitGP/",  bloutname, "cpDNA_whitelist.tsv"), ncolumns = 1)
 
-# Hit cpDNA Berberis bealei
-write(cpberberis$qacc, file= paste0(WD,outfolder,"HitGP/",  bloutname, "cpDNABerberis_whitelist.tsv"), ncolumns = 1)
 
 
 ############## Generate Population Maps
