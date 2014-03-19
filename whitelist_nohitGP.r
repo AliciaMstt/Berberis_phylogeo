@@ -44,21 +44,18 @@ colnames(hitGP)<-c("qacc","sacc", "evalue", "bitscore","qcovs", "length", "piden
 # sscinames means unique Subject Scientific Name(s), separated by a ';'
 # stitle means Subject Title
 
-## Exclude potential paralogs
-#extract blacklisted loci
-all.loci<- hitGP$qacc
-"%w/o%" <- function(x, y) x[!x %in% y]
-noparalogs<- "%w/o%"(all.loci, potparalogs)
-hitGP<-hitGP[hitGP$qacc %in% noparalogs,]
-
 
 ## Generate whitelist of NohitGP loci
 # get list of all loci used for blast
 final = read.delim(paste(file=paste0(WD, outfolder, "PopSamples_BeralpBt_m3.SNP.SNPs"), sep = ""), header = T) 
 # substract the loci that blasted from the loci used
-NohitGP <- match(x=final$CatalogID, table=hitGP$qacc, nomatch=TRUE)
-x <- NohitGP==1
-NohitGP<-final$CatalogID[x]
+NohitGP <- "%w/o%"(final$CatalogID, hitGP$qacc)
+
+
+## Exclude potential paralogs
+#extract blacklisted loci
+"%w/o%" <- function(x, y) x[!x %in% y]
+NohitGP<- "%w/o%"(NohitGP, potparalogs)
 
 ## How many loci did not blast against green plants?
 length(NohitGP)
