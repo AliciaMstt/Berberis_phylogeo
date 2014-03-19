@@ -20,7 +20,7 @@
 #
 # Crete directory for output and run script:
 mkdir -p ../data.out/PopSamples_m3/NohitGP
-R CMD BATCH whitelist_NohitGP.r
+R CMD BATCH whitelist_nohitGP.r
 #
 ###
 ### Copy data to stacks relevant subdirectory to run populations
