@@ -29,3 +29,49 @@ popsumstats <-read.sumstats(file=paste0(datadirectory,"/Popsouts_Rselec/out.nore
   # Save list of potential paralots
   writedirectory= paste0(WD,"/docs")
   write(pl, file= paste0(writedirectory, "/", "potentialparalogs"), ncolumns = 1)
+
+###### Plot only potential paralogs to see if they are all heterozygous
+# Inport using the plink file exported from populations Stacks program
+# using whilelist file (i.e. loci in final matrix) and pop map excluding replicates
+require(adegenet)
+plinkfile=paste0(datadirectory, "/Popsouts_Rselec/out.noreplicates/plink.raw")
+liSNPs<- read.PLINK(file=plinkfile)
+
+## Check number of recovered samples and loci
+print("number of recovered samples and total number of SNPs")
+print(nInd(liSNPs)) 
+print(nLoc(liSNPs))
+
+## Visualize the Matrix as a plot
+par(mfrow = c(1, 1))
+glPlot(liSNPs)
+title("All loci")
+
+# Subset paralog loci
+lociall<-locNames(liSNPs, withAlleles=FALSE) #get loci 
+lociall<-gsub("_._.|_.._.", replacement="", lociall) #take out the BP position and base to keep only loci names
+plplink<- lociall %in% pl # get the ones that match against the paralog list
+paliSNPs<-liSNPs[, plplink] # keep all individuals, and loci in plplink
+  
+#Check number of recovered samples and loci
+print("number of recovered samples and total number of SNPs")
+print(nInd(paliSNPs)) 
+print(nLoc(paliSNPs))
+
+# Visualize the Matrix as a plot
+par(mfrow = c(1, 1))
+glPlot(paliSNPs)
+title("Putatively paralogous SNP loci")
+
+
+# Plot both
+par(mfrow = c(2, 1))
+glPlot(liSNPs)
+title("All SNP loci")
+glPlot(paliSNPs)
+title("Putatively paralogous SNP loci")
+
+
+
+
+
