@@ -1,8 +1,8 @@
 rm(list = ls())
 
 # Define WD and other directories
-#WD<-"/Volumes/TO_GO_1/BerL_1_2_3/3Berberis_phylogeo" 
-WD<-"~/BerL_1_2_3/3Berberis_phylogeo"
+WD<-"/Volumes/TO_GO_1/BerL_1_2_3/3Berberis_phylogeo" 
+#WD<-"~/BerL_1_2_3/3Berberis_phylogeo"
 setwd(WD) 
 list.files()
 
@@ -11,8 +11,6 @@ outfolder = "/data.out/PopSamples_m3/" # tvsdirectory, where the tsv SNP matrice
 
 ### load samples meta information (lane, barcode, pop, etc) and list of potetial paralog loci as blacklist
 matinfo = read.delim(paste(WD,"/info/Ber_06oct13.info", sep = ""), header = T)
-potparalogs = read.delim(paste0(WD,"/docs/potentialparalogs"), header= F)
-potparalogs = potparalogs$V1
 
 ## Load custom functions to create white list of loci and population maps:
 source(paste0(WD,"/bin/whiteRADlist.R"))
@@ -24,7 +22,7 @@ PopOrder <- c(1,2,3,4,9,5,6,7,8)
 #### BerAll
 # Run whiteRAD list for m3
 whiteRADlist(tsv= paste0(WD,outfolder,"PopSamples_BeralpBt_m3.SNP.SNPs"), 
-  writedirectory= paste0(WD,outfolder, "AllLoci/"), blacklist=potparalogs)
+  writedirectory= paste0(WD,outfolder, "AllLoci/"))
   
 # Create population map ALL samples, EXCLUDING replicates
 whitePopMap(drop.rep = TRUE, tsv= paste0(WD,outfolder,"PopSamples_BeralpBt_m3.SNP.SNPs"), 
