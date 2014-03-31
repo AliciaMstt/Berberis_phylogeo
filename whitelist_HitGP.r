@@ -1,8 +1,8 @@
 rm(list = ls())
  
 # Define WD and other directories
-WD<-"/Volumes/TO_GO_1/BerL_1_2_3/3Berberis_phylogeo" 
-#WD<-"~/BerL_1_2_3/3Berberis_phylogeo"
+#WD<-"/Volumes/TO_GO_1/BerL_1_2_3/3Berberis_phylogeo" 
+WD<-"~/BerL_1_2_3/3Berberis_phylogeo"
 setwd(WD) 
 list.files()
 

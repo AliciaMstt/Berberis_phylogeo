@@ -102,6 +102,7 @@ mv ../../../BeralpBt/batch_1.populations* ./out.replicates
 mv ../../../BeralpBt/batch_1.sumstats* ./out.replicates
 mv ./plink* ./out.replicates
 mv ../../../BeralpBt/batch_1.structure.tsv ./out.replicates/
+done
 #
 
 ### ExcludingParalogs
@@ -144,6 +145,8 @@ mv ../../../BeralpBt/batch_1.populations* ./out.replicates
 mv ../../../BeralpBt/batch_1.sumstats* ./out.replicates
 mv ./plink* ./out.replicates
 mv ../../../BeralpBt/batch_1.structure.tsv ./out.replicates/
+done
+#
 #
 ####
 #### Copy results to analyses folder:

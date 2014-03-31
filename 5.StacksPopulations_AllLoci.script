@@ -15,7 +15,6 @@
 #
 ################################################################################################
 #
-
 # 
 ###################################### AllLoci
 #
@@ -57,10 +56,10 @@ done
 #
 # Remove unnecesary files from data.out
 rm -rf ../data.out/PopSamples_m3/AllLoci
-
+#
 # Copy putatively paralogs blacklist to 1stacks
 cp ../docs/potentialparalogs ../../1stacks/stacks/PopSamples/PopSamples_m3/ExcludingParalogs
-
+#
 #
 #
 #
@@ -84,7 +83,6 @@ cd $i/
 # Delete posible .fst outs from previous runs
 rm ../../../BeralpBt/batch_1.fst_summary.tsv
 #
-
 ## For data EXLUDING replicates
 # Run populations
 populations -P ../../../BeralpBt/ -M ../../../BeralpBt/PopSamples_BeralpBt_m3.SNP.SNPs_PopMap_norep_$i.tsv -b 1 -p 7 -f p_value --plink --structure --write_single_snp -W ./PopSamples_BeralpBt_m3.SNP.SNPs_whitelist.tsv
@@ -114,6 +112,7 @@ mv ../../../BeralpBt/batch_1.populations* ./out.replicates
 mv ../../../BeralpBt/batch_1.sumstats* ./out.replicates
 mv ./plink* ./out.replicates
 mv ../../../BeralpBt/batch_1.structure.tsv ./out.replicates/
+done
 #
 #
 #
@@ -126,7 +125,6 @@ cd $i/
 # Delete posible .fst outs from previous runs
 rm ../../../BeralpBt/batch_1.fst_summary.tsv
 #
-
 ## For data EXLUDING replicates
 # Run populations
 populations -P ../../../BeralpBt/ -M ../../../BeralpBt/PopSamples_BeralpBt_m3.SNP.SNPs_PopMap_norep_$i.tsv -b 1 -p 7 -f p_value --plink --structure --write_single_snp -W ./PopSamples_BeralpBt_m3.SNP.SNPs_whitelist.tsv -B ../../potentialparalogs
@@ -156,6 +154,7 @@ mv ../../../BeralpBt/batch_1.populations* ./out.replicates
 mv ../../../BeralpBt/batch_1.sumstats* ./out.replicates
 mv ./plink* ./out.replicates
 mv ../../../BeralpBt/batch_1.structure.tsv ./out.replicates/
+done
 #
 #
 #
@@ -168,15 +167,3 @@ cp -r ./$a/AllLoci ../../../../3Berberis_phylogeo/data.out/PopSamples_m3/
 done
 #
 #
-
-
-
-
-
-
-
-
-
-
-
-
