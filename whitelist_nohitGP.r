@@ -1,8 +1,8 @@
 rm(list = ls())
 
 # Define WD and other directories
-#WD<-"/Volumes/TO_GO_1/BerL_1_2_3/3Berberis_phylogeo" 
-WD<-"~/BerL_1_2_3/3Berberis_phylogeo"
+WD<-"/Volumes/TO_GO_1/BerL_1_2_3/3Berberis_phylogeo" 
+#WD<-"~/BerL_1_2_3/3Berberis_phylogeo"
 setwd(WD) 
 list.files()
 
@@ -17,8 +17,7 @@ bloutname<- sub(".out", "", bloutname)
 
 ### load samples meta information (lane, barcode, pop, etc) and list of potetial paralog loci as blacklist
 matinfo = read.delim(paste(WD,"/info/Ber_06oct13.info", sep = ""), header = T)
-potparalogs = read.delim(paste0(WD,"/docs/potentialparalogs"), header= F)
-potparalogs = potparalogs$V1
+
 
 ## Load custom functions to create population maps:
 source(paste0(WD,"/bin/whitePopMap.R"))
@@ -52,10 +51,6 @@ final = read.delim(paste(file=paste0(WD, outfolder, "PopSamples_BeralpBt_m3.SNP.
 "%w/o%" <- function(x, y) x[!x %in% y]
 NohitGP <- "%w/o%"(final$CatalogID, hitGP$qacc)
 
-
-## Exclude potential paralogs
-#extract blacklisted loci
-NohitGP<- "%w/o%"(NohitGP, potparalogs)
 
 ## How many loci did not blast against green plants?
 length(NohitGP)
