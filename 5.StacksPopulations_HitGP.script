@@ -1,5 +1,6 @@
 # !/bin/sh
-# This script runs populations from from Stacks to export data as STRUCTURE for HitGP/HitGP and as fasta and phylip for the cpDNA and mtDNA
+# This script creates a whitelist file of loci and PopMap for subset of samples and loci and runs populations from from Stacks using the list of putantively paralogous loci as blacklist.
+# IT exports data as STRUCTURE and as fasta and phylip for the cpDNA and mtDNA
 #
 # The subset of samples correspond to:
 # * BerAll: all populations from Berberis alpina (including Za), Berberis moranensis (An population), Berberis trifolia (outgroup).
@@ -13,44 +14,69 @@
 #  - cpDNA (the subset of them that blasted against chloroplast)
 #  - mtDNA (the subset that blasted against the mithocondrion)
 #
-###################################### HitGP (sensu lato)
+#
+################################################################################################
+#
+
+# 
+###################################### HitGP
 #
 ###
-### Run script to generate SNP white list for the loci that blasted against green plantas and Population maps for subsets BerAl, woZaOut, BerSS. 
-### They will be stored in the the subdirectory HitGP inside the folder with the SNP.SNPs data. 
+### Run script to generate SNP while list for all loci and Population maps for subsets BerAl, woZaOut, BerSS. 
+### They will be stored in the the subfolder HitGP inside the folder with the SNP.SNPs data.
 ###
-#
 #
 # Crete directory for output and run script:
 mkdir -p ../data.out/PopSamples_m3/HitGP
- R CMD BATCH whitelist_HitGP.r
+R CMD BATCH whitelist_HitGP.r
 #
 ###
+### Copy data to stacks relevant subdirectory to run populations
+###
+# 
+#
+# Use a loop to move data for BerAll woZaOut BerSS and for Including and Excluding Paralogs
+#
+# Create directories for paralogs grouping
+for z in "ExcludingParalogs" "IncludingParalogs"; do
+mkdir -p ../../1stacks/stacks/PopSamples/PopSamples_m3/$z/
+
 ### Copy data to stacks relevant subdirectory to run populations. Create a subdirectory for the HitGP (all loci that blasted against green plants), the cpDNA (the subset of them that blasted against chloroplast) and the mtDNA (the subset that blasted against the mithocondrion).
 ###
 # 
-# Use a loop to repeat the same for HitGP, cpDNA and mtDNA
-for a in "HitGP" "cpDNA" "mtDNA"; do
-mkdir -p ../../1stacks/stacks/PopSamples/PopSamples_m3/HitGP/$a
+ # Use a loop to repeat the same for HitGP, cpDNA and mtDNA
+ for a in "HitGP" "cpDNA" "mtDNA"; do
+ mkdir -p ../../1stacks/stacks/PopSamples/PopSamples_m3/$z/HitGP/$a
 	# Use a loop to move data for BerAll woZaOut BerSS
 	for i in "BerAll" "BerwoOut" "woZaOut" "BerSS"; do
 	# Create directories for outputs in 1stacks. This will be the WD for running populations
-	mkdir -p ../../1stacks/stacks/PopSamples/PopSamples_m3/HitGP/$a/$i
+	mkdir -p ../../1stacks/stacks/PopSamples/PopSamples_m3/$z/HitGP/$a/$i
 	## Copy data to relevant directories
 	# For whitelists:
-	cp ../../3Berberis_phylogeo/data.out/PopSamples_m3/HitGP/PopSamples_BeralpBt_m3_blastGP${a}_whitelist.tsv ../../1stacks/stacks/PopSamples/PopSamples_m3/HitGP/$a/$i
+	cp ../data.out/PopSamples_m3/HitGP/PopSamples_BeralpBt_m3_blastGP${a}_whitelist.tsv ../../1stacks/stacks/PopSamples/PopSamples_m3/$z/HitGP/$a/$i
 	#
 	# For the Population Maps:
-	cp ../../3Berberis_phylogeo/data.out/PopSamples_m3/HitGP/PopSamples_BeralpBt_m3_blastGP_PopMap* ../../1stacks/stacks/PopSamples/PopSamples_m3/BeralpBt/ 
+	cp ../data.out/PopSamples_m3/HitGP/PopSamples_BeralpBt_m3_blastGP_PopMap* ../../1stacks/stacks/PopSamples/PopSamples_m3/BeralpBt/ 
 	# Create folders for output
-	mkdir -p ../../1stacks/stacks/PopSamples/PopSamples_m3/HitGP/$a/$i/out.replicates 
-	mkdir -p ../../1stacks/stacks/PopSamples/PopSamples_m3/HitGP/$a/$i/out.noreplicates 
+	mkdir -p ../../1stacks/stacks/PopSamples/PopSamples_m3/$z/HitGP/$a/$i/out.replicates 
+	mkdir -p ../../1stacks/stacks/PopSamples/PopSamples_m3/$z/HitGP/$a/$i/out.noreplicates 
 	done
-done	
+  done
+done
+
 #
-###
-### Run Stacks populations
-###
+# Remove unnecesary files from data.out
+rm -rf ../data.out/PopSamples_m3/HitGP
+
+# Copy putatively paralogs blacklist to 1stacks
+cp ../docs/potentialparalogs ../../1stacks/stacks/PopSamples/PopSamples_m3/ExcludingParalogs
+
+#
+#
+#
+####
+#### Run Stacks populations
+####
 #
 # Run populations Stacks program to estimate Fst and export 
 # Filter input so that to process a locus it must be present in -p of the populations 
@@ -58,8 +84,12 @@ done
 # For datasets cpDNA and mtDNA export in fasta (full seqs for each allele from each sample) and plink format
 # Do the same with data including and excluding replicates (see output in out.replicates and out.noreplicates)
 #
+#
+#
+#### IncludingParalogs
+#
 # Declare variables:
-basepath="../../1stacks/stacks/PopSamples/PopSamples_m3/HitGP/"
+basepath="../../1stacks/stacks/PopSamples/PopSamples_m3/IncludingParalogs/HitGP/"
 #
 ## For HitGP
 cd ${basepath}/
@@ -73,36 +103,36 @@ cd ${a}
 	cd ./$i/
 	pwd
 	# Delete posible .fst outs from previous runs
-	rm ../../../BeralpBt/batch_1.fst_summary.tsv
+	rm ../../../../BeralpBt/batch_1.fst_summary.tsv
 	#
 	## For data EXLUDING replicates
 	# Run populations
-	populations -P ../../../BeralpBt/ -M ../../../BeralpBt/PopSamples_BeralpBt_m3_blastGP_PopMap_norep_$i.tsv -b 1 -p 7 -f p_value --plink --structure --write_single_snp -W ./PopSamples_BeralpBt_m3_blastGP${a}_whitelist.tsv
+	populations -P ../../../../BeralpBt/ -M ../../../../BeralpBt/PopSamples_BeralpBt_m3_blastGP_PopMap_norep_$i.tsv -b 1 -p 7 -f p_value --plink --structure --write_single_snp -W ./PopSamples_BeralpBt_m3_blastGP${a}_whitelist.tsv
 	#
 	# Run plink to recode .ped to .raw plink file. This reads the plink.ped file and creates a plink.raw file in the WD
-plink --file ../../../BeralpBt/batch_1.plink --allow-no-sex --recodeA
+plink --file ../../../../BeralpBt/batch_1.plink --allow-no-sex --recodeA
 #
 	# Move outputs to output folder to have them in a single place
-	mv ../../../BeralpBt/batch_1.fst_summary.tsv ./out.noreplicates
-	mv ../../../BeralpBt/batch_1.plink* ./out.noreplicates
-	mv ../../../BeralpBt/batch_1.populations* ./out.noreplicates
-	mv ../../../BeralpBt/batch_1.sumstats* ./out.noreplicates
+	mv ../../../../BeralpBt/batch_1.fst_summary.tsv ./out.noreplicates
+	mv ../../../../BeralpBt/batch_1.plink* ./out.noreplicates
+	mv ../../../../BeralpBt/batch_1.populations* ./out.noreplicates
+	mv ../../../../BeralpBt/batch_1.sumstats* ./out.noreplicates
 	mv ./plink* ./out.noreplicates
-	mv ../../../BeralpBt/batch_1.structure.tsv ./out.noreplicates/
+	mv ../../../../BeralpBt/batch_1.structure.tsv ./out.noreplicates/
 	#
 	## For data INCLUDING replicates
 	# Run populations
-	populations -P ../../../BeralpBt/ -M ../../../BeralpBt/PopSamples_BeralpBt_m3_blastGP_PopMap_withrep_$i.tsv -b 1 -p 7 -f p_value --plink --structure --write_single_snp -W ./PopSamples_BeralpBt_m3_blastGP${a}_whitelist.tsv
+	populations -P ../../../../BeralpBt/ -M ../../../../BeralpBt/PopSamples_BeralpBt_m3_blastGP_PopMap_withrep_$i.tsv -b 1 -p 7 -f p_value --plink --structure --write_single_snp -W ./PopSamples_BeralpBt_m3_blastGP${a}_whitelist.tsv
 	# Run plink to recode .ped to .raw plink file. This reads the plink.ped file and creates a plink.raw file in the WD
-	plink --file ../../../BeralpBt/batch_1.plink --allow-no-sex --recodeA
+	plink --file ../../../../BeralpBt/batch_1.plink --allow-no-sex --recodeA
 	#
 	# Have outputs to output folder to have them in a single place
-	mv ../../../BeralpBt/batch_1.fst_summary.tsv ./out.replicates
-	mv ../../../BeralpBt/batch_1.plink* ./out.replicates
-	mv ../../../BeralpBt/batch_1.populations* ./out.replicates
-	mv ../../../BeralpBt/batch_1.sumstats* ./out.replicates
+	mv ../../../../BeralpBt/batch_1.fst_summary.tsv ./out.replicates
+	mv ../../../../BeralpBt/batch_1.plink* ./out.replicates
+	mv ../../../../BeralpBt/batch_1.populations* ./out.replicates
+	mv ../../../../BeralpBt/batch_1.sumstats* ./out.replicates
 	mv ./plink* ./out.replicates
-	mv ../../../BeralpBt/batch_1.structure.tsv ./out.replicates/
+	mv ../../../../BeralpBt/batch_1.structure.tsv ./out.replicates/
 	#
 	cd ..
 	done
@@ -121,43 +151,159 @@ cd ${a}
 	cd ./$i/
 	pwd
 	# Delete posible .fst outs from previous runs
-	rm ../../../BeralpBt/batch_1.fst_summary.tsv
+	rm ../../../../BeralpBt/batch_1.fst_summary.tsv
 	#
 	## For data EXLUDING replicates
 	# Run populations
-	populations -P ../../../BeralpBt/ -M ../../../BeralpBt/PopSamples_BeralpBt_m3_blastGP_PopMap_norep_$i.tsv -b 1 -p 7 -f p_value --plink --phylip --fasta --phylip --phylip_var -W ./PopSamples_BeralpBt_m3_blastGP${a}_whitelist.tsv
+	populations -P ../../../../BeralpBt/ -M ../../../../BeralpBt/PopSamples_BeralpBt_m3_blastGP_PopMap_norep_$i.tsv -b 1 -p 7 -f p_value --plink --phylip --fasta --phylip --phylip_var -W ./PopSamples_BeralpBt_m3_blastGP${a}_whitelist.tsv
 	#
 	# Run plink to recode .ped to .raw plink file. This reads the plink.ped file and creates a plink.raw file in the WD
-plink --file ../../../BeralpBt/batch_1.plink --allow-no-sex --recodeA
+plink --file ../../../../BeralpBt/batch_1.plink --allow-no-sex --recodeA
 #
 	# Move outputs to output folder to have them in a single place
-	mv ../../../BeralpBt/batch_1.fst_summary.tsv ./out.noreplicates
-	mv ../../../BeralpBt/batch_1.plink* ./out.noreplicates
-	mv ../../../BeralpBt/batch_1.populations* ./out.noreplicates
-	mv ../../../BeralpBt/batch_1.sumstats* ./out.noreplicates
+	mv ../../../../BeralpBt/batch_1.fst_summary.tsv ./out.noreplicates
+	mv ../../../../BeralpBt/batch_1.plink* ./out.noreplicates
+	mv ../../../../BeralpBt/batch_1.populations* ./out.noreplicates
+	mv ../../../../BeralpBt/batch_1.sumstats* ./out.noreplicates
 	mv ./plink* ./out.noreplicates
-	mv ../../../BeralpBt/batch_1.phylip ./out.noreplicates/
-	mv ../../../BeralpBt/batch_1.fa ./out.noreplicates/
+	mv ../../../../BeralpBt/batch_1.phylip ./out.noreplicates/
+	mv ../../../../BeralpBt/batch_1.fa ./out.noreplicates/
 	#
 	## For data INCLUDING replicates
 	# Run populations
-	populations -P ../../../BeralpBt/ -M ../../../BeralpBt/PopSamples_BeralpBt_m3_blastGP_PopMap_withrep_$i.tsv -b 1 -p 7 -f p_value --plink --phylip --fasta --phylip --phylip_var -W ./PopSamples_BeralpBt_m3_blastGP${a}_whitelist.tsv
+	populations -P ../../../../BeralpBt/ -M ../../../../BeralpBt/PopSamples_BeralpBt_m3_blastGP_PopMap_withrep_$i.tsv -b 1 -p 7 -f p_value --plink --phylip --fasta --phylip --phylip_var -W ./PopSamples_BeralpBt_m3_blastGP${a}_whitelist.tsv
 	# Run plink to recode .ped to .raw plink file. This reads the plink.ped file and creates a plink.raw file in the WD
-	plink --file ../../../BeralpBt/batch_1.plink --allow-no-sex --recodeA
+	plink --file ../../../../BeralpBt/batch_1.plink --allow-no-sex --recodeA
 	#
 	# Have outputs to output folder to have them in a single place
-	mv ../../../BeralpBt/batch_1.fst_summary.tsv ./out.replicates
-	mv ../../../BeralpBt/batch_1.plink* ./out.replicates
-	mv ../../../BeralpBt/batch_1.populations* ./out.replicates
-	mv ../../../BeralpBt/batch_1.sumstats* ./out.replicates
+	mv ../../../../BeralpBt/batch_1.fst_summary.tsv ./out.replicates
+	mv ../../../../BeralpBt/batch_1.plink* ./out.replicates
+	mv ../../../../BeralpBt/batch_1.populations* ./out.replicates
+	mv ../../../../BeralpBt/batch_1.sumstats* ./out.replicates
 	mv ./plink* ./out.replicates
-	mv ../../../BeralpBt/batch_1.phylip ./out.replicates/
-	mv ../../../BeralpBt/batch_1.fa ./out.replicates/
+	mv ../../../../BeralpBt/batch_1.phylip ./out.replicates/
+	mv ../../../../BeralpBt/batch_1.fa ./out.replicates/
 	#
 	cd ..
 	done
 cd ..	
 done
+cd ../../../../../../../../3Berberis_phylogeo/bin/
 
-## Copy results to analyses folder:
-cp -r ./ ../../../../../3Berberis_phylogeo/data.out/PopSamples_m3/HitGP/
+#### ExcludingParalogs
+#
+# Declare variables:
+basepath="../../1stacks/stacks/PopSamples/PopSamples_m3/ExcludingParalogs/HitGP/"
+#
+## For HitGP
+cd ${basepath}/
+# First loop
+for a in "HitGP" ; do
+# Go to grouping directory
+cd ${a}
+ # Nested Loop
+	for i in "BerwoOut" "woZaOut" "BerSS" "BerAll"; do
+	## Go to WD
+	cd ./$i/
+	pwd
+	# Delete posible .fst outs from previous runs
+	rm ../../../../BeralpBt/batch_1.fst_summary.tsv
+	#
+	## For data EXLUDING replicates
+	# Run populations
+	populations -P ../../../../BeralpBt/ -M ../../../../BeralpBt/PopSamples_BeralpBt_m3_blastGP_PopMap_norep_$i.tsv -b 1 -p 7 -f p_value --plink --structure --write_single_snp -W ./PopSamples_BeralpBt_m3_blastGP${a}_whitelist.tsv -B ../../../potentialparalogs
+	#
+	# Run plink to recode .ped to .raw plink file. This reads the plink.ped file and creates a plink.raw file in the WD
+plink --file ../../../../BeralpBt/batch_1.plink --allow-no-sex --recodeA
+#
+	# Move outputs to output folder to have them in a single place
+	mv ../../../../BeralpBt/batch_1.fst_summary.tsv ./out.noreplicates
+	mv ../../../../BeralpBt/batch_1.plink* ./out.noreplicates
+	mv ../../../../BeralpBt/batch_1.populations* ./out.noreplicates
+	mv ../../../../BeralpBt/batch_1.sumstats* ./out.noreplicates
+	mv ./plink* ./out.noreplicates
+	mv ../../../../BeralpBt/batch_1.structure.tsv ./out.noreplicates/
+	#
+	## For data INCLUDING replicates
+	# Run populations
+	populations -P ../../../../BeralpBt/ -M ../../../../BeralpBt/PopSamples_BeralpBt_m3_blastGP_PopMap_withrep_$i.tsv -b 1 -p 7 -f p_value --plink --structure --write_single_snp -W ./PopSamples_BeralpBt_m3_blastGP${a}_whitelist.tsv -B ../../../potentialparalogs
+
+	# Run plink to recode .ped to .raw plink file. This reads the plink.ped file and creates a plink.raw file in the WD
+	plink --file ../../../../BeralpBt/batch_1.plink --allow-no-sex --recodeA
+	#
+	# Have outputs to output folder to have them in a single place
+	mv ../../../../BeralpBt/batch_1.fst_summary.tsv ./out.replicates
+	mv ../../../../BeralpBt/batch_1.plink* ./out.replicates
+	mv ../../../../BeralpBt/batch_1.populations* ./out.replicates
+	mv ../../../../BeralpBt/batch_1.sumstats* ./out.replicates
+	mv ./plink* ./out.replicates
+	mv ../../../../BeralpBt/batch_1.structure.tsv ./out.replicates/
+	#
+	cd ..
+	done
+cd ..	
+done	
+#
+#
+## For cpDNA, mtDNA (no do this step you need >stacks/1.09 as the version 1.01 does not allow fasta export)
+# First loop
+for a in "cpDNA" "mtDNA"; do
+# Go to grouping directory
+cd ${a}
+ # Nested Loop
+	for i in "BerwoOut" "woZaOut" "BerSS" "BerAll"; do
+	## Go to WD
+	cd ./$i/
+	pwd
+	# Delete posible .fst outs from previous runs
+	rm ../../../../BeralpBt/batch_1.fst_summary.tsv
+	#
+	## For data EXLUDING replicates
+	# Run populations
+	populations -P ../../../../BeralpBt/ -M ../../../../BeralpBt/PopSamples_BeralpBt_m3_blastGP_PopMap_norep_$i.tsv -b 1 -p 7 -f p_value --plink --phylip --fasta --phylip --phylip_var -W ./PopSamples_BeralpBt_m3_blastGP${a}_whitelist.tsv -B ../../../potentialparalogs
+
+	#
+	# Run plink to recode .ped to .raw plink file. This reads the plink.ped file and creates a plink.raw file in the WD
+plink --file ../../../../BeralpBt/batch_1.plink --allow-no-sex --recodeA
+#
+	# Move outputs to output folder to have them in a single place
+	mv ../../../../BeralpBt/batch_1.fst_summary.tsv ./out.noreplicates
+	mv ../../../../BeralpBt/batch_1.plink* ./out.noreplicates
+	mv ../../../../BeralpBt/batch_1.populations* ./out.noreplicates
+	mv ../../../../BeralpBt/batch_1.sumstats* ./out.noreplicates
+	mv ./plink* ./out.noreplicates
+	mv ../../../../BeralpBt/batch_1.phylip ./out.noreplicates/
+	mv ../../../../BeralpBt/batch_1.fa ./out.noreplicates/
+	#
+	## For data INCLUDING replicates
+	# Run populations
+	populations -P ../../../../BeralpBt/ -M ../../../../BeralpBt/PopSamples_BeralpBt_m3_blastGP_PopMap_withrep_$i.tsv -b 1 -p 7 -f p_value --plink --phylip --fasta --phylip --phylip_var -W ./PopSamples_BeralpBt_m3_blastGP${a}_whitelist.tsv -B ../../../potentialparalogs
+
+	# Run plink to recode .ped to .raw plink file. This reads the plink.ped file and creates a plink.raw file in the WD
+	plink --file ../../../../BeralpBt/batch_1.plink --allow-no-sex --recodeA
+	#
+	# Have outputs to output folder to have them in a single place
+	mv ../../../../BeralpBt/batch_1.fst_summary.tsv ./out.replicates
+	mv ../../../../BeralpBt/batch_1.plink* ./out.replicates
+	mv ../../../../BeralpBt/batch_1.populations* ./out.replicates
+	mv ../../../../BeralpBt/batch_1.sumstats* ./out.replicates
+	mv ./plink* ./out.replicates
+	mv ../../../../BeralpBt/batch_1.phylip ./out.replicates/
+	mv ../../../../BeralpBt/batch_1.fa ./out.replicates/
+	#
+	cd ..
+	done
+cd ..	
+done
+#
+#
+#
+####
+#### Copy results to analyses folder:
+####
+for a in "ExcludingParalogs" "IncludingParalogs"; do
+cd ../../../..
+cp -r ./$a/HitGP ../../../../../../3Berberis_phylogeo/data.out/PopSamples_m3/
+done
+#
+#

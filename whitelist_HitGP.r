@@ -1,8 +1,8 @@
 rm(list = ls())
  
 # Define WD and other directories
-#WD<-"/Volumes/TO_GO_1/BerL_1_2_3/3Berberis_phylogeo" 
-WD<-"~/BerL_1_2_3/3Berberis_phylogeo"
+WD<-"/Volumes/TO_GO_1/BerL_1_2_3/3Berberis_phylogeo" 
+#WD<-"~/BerL_1_2_3/3Berberis_phylogeo"
 setwd(WD) 
 list.files()
 
@@ -17,8 +17,7 @@ bloutname<- sub(".out", "", bloutname)
 
 ### load samples meta information (lane, barcode, pop, etc) and list of potetial paralog loci as blacklist
 matinfo = read.delim(paste(WD,"/info/Ber_06oct13.info", sep = ""), header = T)
-potparalogs = read.delim(paste0(WD,"/docs/potentialparalogs"), header= F)
-potparalogs = potparalogs$V1
+
 
 ## Load custom functions to create population maps:
 source(paste0(WD,"/bin/whitePopMap.R"))
@@ -44,13 +43,6 @@ colnames(hitGP)<-c("qacc","sacc", "evalue", "bitscore","qcovs", "length", "piden
 # staxids means unique Subject Taxonomy ID(s), separated by a ';'(in numerical order)
 # sscinames means unique Subject Scientific Name(s), separated by a ';'
 # stitle means Subject Title
-
-## Exclude potential paralogs
-#extract blacklisted loci
-all.loci<- hitGP$qacc
-"%w/o%" <- function(x, y) x[!x %in% y]
-noparalogs<- "%w/o%"(all.loci, potparalogs)
-hitGP<-hitGP[hitGP$qacc %in% noparalogs,]
 
 ### How many sequences where recovered?
 nrow(hitGP)
@@ -78,7 +70,7 @@ nrow(cploci) * 83 #how many bp?
 cpberberis<-grep("Berberis bealei chloroplast, complete genome", cploci$stitle) 
 cpberberis <-cploci[cpberberis,]
 nrow(cpberberis)
-
+nrow(cpberberis) * 83 #how many bp?
 
 
 #### Save white list of loci
