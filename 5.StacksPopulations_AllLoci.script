@@ -144,7 +144,7 @@ mv ../../../BeralpBt/batch_1.structure.tsv ./out.noreplicates/
 #
 ## For data INCLUDING replicates
 # Run populations
-populations -P ../../../BeralpBt/ -M ../../../BeralpBt/PopSamples_BeralpBt_m3.SNP.SNPs_PopMap_withrep_$i.tsv -b 1 -p 7 -f p_value --plink --structure --write_single_snp -W ./PopSamples_BeralpBt_m3.SNP.SNPs_whitelist.tsv
+populations -P ../../../BeralpBt/ -M ../../../BeralpBt/PopSamples_BeralpBt_m3.SNP.SNPs_PopMap_withrep_$i.tsv -b 1 -p 7 -f p_value --plink --structure --write_single_snp -W ./PopSamples_BeralpBt_m3.SNP.SNPs_whitelist.tsv -B ../../potentialparalogs
 #
 # Run plink to recode .ped to .raw plink file. This reads the plink.ped file and creates a plink.raw file in the WD
 plink --file ../../../BeralpBt/batch_1.plink --allow-no-sex --recodeA
@@ -164,7 +164,7 @@ mv ../../../BeralpBt/batch_1.structure.tsv ./out.replicates/
 ####
 for a in "ExcludingParalogs" "IncludingParalogs"; do
 cd ../../..
-cp -r ./$a ../../../../../../3Berberis_phylogeo/data.out/PopSamples_m3/
+cp -r ./$a/AllLoci ../../../../3Berberis_phylogeo/data.out/PopSamples_m3/
 done
 #
 #
