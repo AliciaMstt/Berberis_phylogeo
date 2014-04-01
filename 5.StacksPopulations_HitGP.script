@@ -19,7 +19,7 @@
 #
 
 # 
-###################################### HitGP
+echo "###################################### HitGP"
 #
 ###
 ### Run script to generate SNP while list for all loci and Population maps for subsets BerAl, woZaOut, BerSS. 
@@ -86,7 +86,7 @@ cp ../docs/potentialparalogs ../../1stacks/stacks/PopSamples/PopSamples_m3/Exclu
 #
 #
 #
-#### IncludingParalogs
+echo "#### IncludingParalogs"
 #
 # Declare variables:
 basepath="../../1stacks/stacks/PopSamples/PopSamples_m3/IncludingParalogs/HitGP/"
@@ -95,10 +95,12 @@ basepath="../../1stacks/stacks/PopSamples/PopSamples_m3/IncludingParalogs/HitGP/
 cd ${basepath}/
 # First loop
 for a in "HitGP" ; do
+echo "## $a"
 # Go to grouping directory
 cd ${a}
  # Nested Loop
 	for i in "BerwoOut" "woZaOut" "BerSS" "BerAll"; do
+	echo "# $i"
 	## Go to WD
 	cd ./$i/
 	pwd
@@ -143,10 +145,12 @@ done
 ## For cpDNA, mtDNA (no do this step you need >stacks/1.09 as the version 1.01 does not allow fasta export)
 # First loop
 for a in "cpDNA" "mtDNA"; do
+echo "## $a"
 # Go to grouping directory
 cd ${a}
  # Nested Loop
 	for i in "BerwoOut" "woZaOut" "BerSS" "BerAll"; do
+	echo "# $i"
 	## Go to WD
 	cd ./$i/
 	pwd
@@ -188,9 +192,9 @@ plink --file ../../../../BeralpBt/batch_1.plink --allow-no-sex --recodeA
 	done
 cd ..	
 done
-cd ../../../../../../../../3Berberis_phylogeo/bin/
+cd ../../../../../../3Berberis_phylogeo/bin/
 
-#### ExcludingParalogs
+echo "#### ExcludingParalogs"
 #
 # Declare variables:
 basepath="../../1stacks/stacks/PopSamples/PopSamples_m3/ExcludingParalogs/HitGP/"
@@ -199,10 +203,12 @@ basepath="../../1stacks/stacks/PopSamples/PopSamples_m3/ExcludingParalogs/HitGP/
 cd ${basepath}/
 # First loop
 for a in "HitGP" ; do
+echo "## $a"
 # Go to grouping directory
 cd ${a}
  # Nested Loop
 	for i in "BerwoOut" "woZaOut" "BerSS" "BerAll"; do
+	echo "# $i"
 	## Go to WD
 	cd ./$i/
 	pwd
@@ -248,10 +254,12 @@ done
 ## For cpDNA, mtDNA (no do this step you need >stacks/1.09 as the version 1.01 does not allow fasta export)
 # First loop
 for a in "cpDNA" "mtDNA"; do
+echo "## $a"
 # Go to grouping directory
 cd ${a}
  # Nested Loop
 	for i in "BerwoOut" "woZaOut" "BerSS" "BerAll"; do
+	echo "# $i"
 	## Go to WD
 	cd ./$i/
 	pwd
@@ -299,11 +307,12 @@ done
 #
 #
 ####
-#### Copy results to analyses folder:
+echo "#### Copy results to analyses folder"
 ####
+cd ../../
 for a in "ExcludingParalogs" "IncludingParalogs"; do
-cd ../../../..
-cp -r ./$a/HitGP ../../../../../../3Berberis_phylogeo/data.out/PopSamples_m3/
+mkdir -p ../../../../3Berberis_phylogeo/data.out/PopSamples_m3/$a
+cp -r ./$a/HitGP ../../../../3Berberis_phylogeo/data.out/PopSamples_m3/$a
 done
 #
 #

@@ -16,7 +16,7 @@
 ################################################################################################
 #
 # 
-###################################### AllLoci
+echo "###################################### AllLoci"
 #
 ###
 ### Run script to generate SNP while list for all loci and Population maps for subsets BerAl, woZaOut, BerSS. 
@@ -74,10 +74,11 @@ cp ../docs/potentialparalogs ../../1stacks/stacks/PopSamples/PopSamples_m3/Exclu
 #
 #
 #
-### IncludingParalogs
+echo "### IncludingParalogs"
 #
 cd ../../1stacks/stacks/PopSamples/PopSamples_m3/IncludingParalogs/AllLoci/
 for i in "BerAll" "BerwoOut" "woZaOut" "BerSS"; do
+echo "## $i"
 ## Go to WD
 cd $i/
 # Delete posible .fst outs from previous runs
@@ -116,10 +117,11 @@ done
 #
 #
 #
-### ExcludingParalogs
+echo "### ExcludingParalogs"
 #
 cd ../../../ExcludingParalogs/AllLoci/
 for i in "BerAll" "BerwoOut" "woZaOut" "BerSS"; do
+echo "## $i"
 ## Go to WD
 cd $i/
 # Delete posible .fst outs from previous runs
@@ -159,11 +161,12 @@ done
 #
 #
 ####
-#### Copy results to analyses folder:
+echo "#### Copy results to analyses folder"
 ####
-for a in "ExcludingParalogs" "IncludingParalogs"; do
 cd ../../..
-cp -r ./$a/AllLoci ../../../../3Berberis_phylogeo/data.out/PopSamples_m3/
+for a in "ExcludingParalogs" "IncludingParalogs"; do
+mkdir -p ../../../../3Berberis_phylogeo/data.out/PopSamples_m3/$a
+cp -r ./$a/AllLoci ../../../../3Berberis_phylogeo/data.out/PopSamples_m3/$a/
 done
 #
 #
