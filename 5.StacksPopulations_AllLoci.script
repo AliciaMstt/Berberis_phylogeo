@@ -113,6 +113,7 @@ mv ../../../BeralpBt/batch_1.populations* ./out.replicates
 mv ../../../BeralpBt/batch_1.sumstats* ./out.replicates
 mv ./plink* ./out.replicates
 mv ../../../BeralpBt/batch_1.structure.tsv ./out.replicates/
+cd ..
 done
 #
 #
@@ -156,6 +157,7 @@ mv ../../../BeralpBt/batch_1.populations* ./out.replicates
 mv ../../../BeralpBt/batch_1.sumstats* ./out.replicates
 mv ./plink* ./out.replicates
 mv ../../../BeralpBt/batch_1.structure.tsv ./out.replicates/
+cd ..
 done
 #
 #
@@ -163,7 +165,7 @@ done
 ####
 echo "#### Copy results to analyses folder"
 ####
-cd ../../..
+cd ../..
 for a in "ExcludingParalogs" "IncludingParalogs"; do
 mkdir -p ../../../../3Berberis_phylogeo/data.out/PopSamples_m3/$a
 cp -r ./$a/AllLoci ../../../../3Berberis_phylogeo/data.out/PopSamples_m3/$a/
