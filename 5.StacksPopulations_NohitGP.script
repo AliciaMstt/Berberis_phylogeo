@@ -52,6 +52,12 @@ mkdir -p ../../1stacks/stacks/PopSamples/PopSamples_m3/$a/NohitGP/$i/out.norepli
 done
 done
 #
+# Remove unnecesary files from data.out
+rm -rf ../data.out/PopSamples_m3/NohitGP
+#
+# Copy putatively paralogs blacklist to 1stacks
+cp ../docs/potentialparalogs ../../1stacks/stacks/PopSamples/PopSamples_m3/ExcludingParalogs
+#
 #
 ###
 ### Run Stacks populations
@@ -109,7 +115,7 @@ done
 
 echo "### ExcludingParalogs"
 #
-cd ../../../ExcludingParalogs/NohitGP/
+cd ../../ExcludingParalogs/NohitGP/
 for i in "BerAll" "BerwoOut" "woZaOut" "BerSS"; do
 echo "## $i"
 ## Go to WD

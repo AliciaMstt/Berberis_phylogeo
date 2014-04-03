@@ -120,7 +120,7 @@ done
 #
 echo "### ExcludingParalogs"
 #
-cd ../../../ExcludingParalogs/AllLoci/
+cd ../../ExcludingParalogs/AllLoci/
 for i in "BerAll" "BerwoOut" "woZaOut" "BerSS"; do
 echo "## $i"
 ## Go to WD
