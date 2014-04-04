@@ -12,14 +12,7 @@ The working directory for fastStructure analyses is
 3Berberis_phylogeo/fastSTRUCTURE
 ```
 
-Inside there is a directory for each set of loci analysed. Namely:
-
-* AllLoci: all RAD loci
-* HitGP: loci that positively blasted against green plants
-* NohitGP: loci that didn't blasted against green plants
-
-
-Each of them contains the directories of the subset of samples used to run Structure Independently. Namely:
+Inside there is a directory for the set of loci analysed (ExcludingParalogs) and the subset of samples used to run Structure Independently. Namely:
 
 * woZaOut: excluding samples from El Zamorano population (Za) and Berberis trifolia (outgroup)
 * BerSS: Berberis alpina sensu stricto, populations (Aj, Iz, Ma, Pe, Tl, To)
@@ -29,7 +22,7 @@ Run fastSTRUCTURE
 ======================
 
 
-AllLoci
+ExcludingParalogs
 ------------
 
 ### Set wd and input files 
@@ -37,12 +30,11 @@ Create working directory and copy and rename accordinly structure file generated
 
 
 ```
-cd ../fastSTRUCTURE/
-mkdir -p AllLoci
-cd AllLoci
+mkdir -p ExcludingParalogs
+cd ExcludingParalogs
 for i in "BerwoOut" "woZaOut" "BerSS"; do
 mkdir -p $i
-cp ../../data.out/PopSamples_m3/AllLoci/$i/out.noreplicates/batch_1.structure.tsv ./$i/structure$i.str
+cp ../../data.out/PopSamples_m3/ExcludingParalogs/AllLoci/$i/out.noreplicates/batch_1.structure.tsv ./$i/structure$i.str
 done
 
 ```
@@ -62,32 +54,58 @@ quit(save=("no"))
 
 ### Run Analyses
 
+#### BerwoOut
+
+Run fastSTRUCTURE with a range of values of K with the **simple prior** and 50 repetitions. 
+
+```
+ExcludingParalogs$
+cd BerwoOut
+bsub < bsub.fastSTRUCTURE_BerwoOut_simplerep.job
+```
+
+Results will be saved in the repruns directory. The number i in *rep_i corresponds to the repetition, and the number k in *rep_i.k correspodns to the value of k tested. 
+
+You can check the output summary in [fastSTRUCT_BerwoOut_simplerep-%j.out](./fastSTRUCTURE/ExcludingParalogs/AllLoci/BerwoOut/fastSTRUCT_BerwoOut_simplere-%j.out). It contains the last tree lines of the *log files for each repetition and K, and the results of running the model complexity selection algoritm for each K. 
+
+
+The model complexity selected by simple prior where K=X and K=X. To detect more subtle structure run fasSTRUCTURE with the **logistic prior** with K= 2, 3 and 30 repetitions.
+
+```
+ExcludingParalogs/AllLoci/BerwoOut$
+bsub < bsub.fastSTRUCTURE_BerwoOut_logisticrep.job
+```
+
+Results will be saved in the repruns directory. The number i in *rep_i corresponds to the repetition, and the number k in *rep_i.k correspodns to the value of k tested. 
+
+You can check the output summary in [fastSTRUCT_BerwoOut_logisticrep-%j.out](./fastSTRUCTURE/ExcludingParalogs/AllLoci/BerwoOut/fastSTRUCT_BerwoOut_logisticrep-%j.out). It contains the last tree lines of the *log files for each repetition and K, and the results of running the model complexity selection algoritm for each K. 
+
 
 #### woZaOut
 
 Run fastSTRUCTURE with a range of values of K with the **simple prior** and 50 repetitions. 
 
 ```
-AllLoci$
+ExcludingParalogs$
 cd woZaOut
 bsub < bsub.fastSTRUCTURE_woZaOut_simplerep.job
 ```
 
 Results will be saved in the repruns directory. The number i in *rep_i corresponds to the repetition, and the number k in *rep_i.k correspodns to the value of k tested. 
 
-You can check the output summary in [fastSTRUCT_woZaOut_simplerep-%j.out](./fastSTRUCTURE/AllLoci/woZaOut/fastSTRUCT_woZaOut_simplere-%j.out). It contains the last tree lines of the *log files for each repetition and K, and the results of running the model complexity selection algoritm for each K. 
+You can check the output summary in [fastSTRUCT_woZaOut_simplerep-%j.out](./fastSTRUCTURE/ExcludingParalogs/AllLoci/woZaOut/fastSTRUCT_woZaOut_simplere-%j.out). It contains the last tree lines of the *log files for each repetition and K, and the results of running the model complexity selection algoritm for each K. 
 
 
 The model complexity selected by simple prior where K=2 and K=3. To detect more subtle structure run fasSTRUCTURE with the **logistic prior** with K= 2, 3 and 30 repetitions.
 
 ```
-AllLoci/woZaOut$
+ExcludingParalogs/AllLoci/woZaOut$
 bsub < bsub.fastSTRUCTURE_woZaOut_logisticrep.job
 ```
 
 Results will be saved in the repruns directory. The number i in *rep_i corresponds to the repetition, and the number k in *rep_i.k correspodns to the value of k tested. 
 
-You can check the output summary in [fastSTRUCT_woZaOut_logisticrep-%j.out](./fastSTRUCTURE/AllLoci/woZaOut/fastSTRUCT_woZaOut_logisticrep-%j.out). It contains the last tree lines of the *log files for each repetition and K, and the results of running the model complexity selection algoritm for each K. 
+You can check the output summary in [fastSTRUCT_woZaOut_logisticrep-%j.out](./fastSTRUCTURE/ExcludingParalogs/AllLoci/woZaOut/fastSTRUCT_woZaOut_logisticrep-%j.out). It contains the last tree lines of the *log files for each repetition and K, and the results of running the model complexity selection algoritm for each K. 
 
 
 
@@ -96,205 +114,26 @@ You can check the output summary in [fastSTRUCT_woZaOut_logisticrep-%j.out](./fa
 Run fastSTRUCTURE with a range of values of K with the **simple prior** and 50 repetitions. 
 
 ```
-AllLoci$
+ExcludingParalogs$
 cd BerSS
 bsub < bsub.fastSTRUCTURE_BerSS_simplerep.job
 ```
 
 Results will be saved in the repruns directory. The number i in *rep_i corresponds to the repetition, and the number k in *rep_i.k correspodns to the value of k tested. 
 
-You can check the output summary in [fastSTRUCT_BerSS_simplerep-%j.out](./fastSTRUCTURE/AllLoci/BerSS/fastSTRUCT_BerSS_simplere-%j.out). It contains the last tree lines of the *log files for each repetition and K, and the results of running the model complexity selection algoritm for each K. 
+You can check the output summary in [fastSTRUCT_BerSS_simplerep-%j.out](./fastSTRUCTURE/ExcludingParalogs/AllLoci/BerSS/fastSTRUCT_BerSS_simplere-%j.out). It contains the last tree lines of the *log files for each repetition and K, and the results of running the model complexity selection algoritm for each K. 
 
 
 The model complexity selected by simple prior where K=2 and K=3. To detect more subtle structure run fasSTRUCTURE with the **logistic prior** and values similar those found for the simple. In this case run with K= 2, 3 and 30 repetitions.
 
 ```
-AllLoci/BerSS$
+ExcludingParalogs/AllLoci/BerSS$
 bsub < bsub.fastSTRUCTURE_BerSS_logisticrep.job
 ```
 
 Results will be saved in the repruns directory. The number i in *rep_i corresponds to the repetition, and the number k in *rep_i.k correspodns to the value of k tested. 
 
-You can check the output summary in [fastSTRUCT_BerSS_logisticrep-%j.out](./fastSTRUCTURE/AllLoci/BerSS/fastSTRUCT_BerSS_logisticrep-%j.out). It contains the last tree lines of the *log files for each repetition and K, and the results of running the model complexity selection algoritm for each K. 
-
-
-
-
-
-HitGP
-------------
-
-### Set wd and input files 
-Create working directory and copy and rename accordinly structure file generated by Stacks (see script 5.*) 
-
-
-```
-cd ../fastSTRUCTURE/
-mkdir -p HitGP
-cd HitGP
-for i in "BerwoOut" "woZaOut" "BerSS"; do
-mkdir -p $i
-cp ../../data.out/PopSamples_m3/HitGP/HitGP/$i/out.noreplicates/batch_1.structure.tsv ./$i/structure$i.str
-done
-
-```
-
-Use the script **struc2faststruct.R** to change the value of missing data from 0 to -9 and to ensure that the first 6 columns contain samples names and metadata only (they are ignored by fastSTRUCTURE) and that there is NO header. This is the format required by fastSTRUCTURE.
-
-```
-R 
-source("../struc2faststruct.R")
-WD<-getwd()
-for (i in c("BerwoOut", "woZaOut", "BerSS")) {
-	struc2faststruct(inputfile=paste0(WD, "/", i,"/structure", i, ".str"), outputfile=paste0(WD,"/", i,"/structure", i, "fast.str"))
-	} 
-quit(save="no")
-```
-
-
-### Run Analyses and plot
-
-
-#### woZaOut
-
-Run fastSTRUCTURE with a range of values of K with the **simple prior** and 50 repetitions. 
-
-```
-HitGP$
-cd woZaOut
-bsub < bsub.fastSTRUCTURE_woZaOut_simplerep.job
-```
-
-Results will be saved in the repruns directory. The number i in *rep_i corresponds to the repetition, and the number k in *rep_i.k correspodns to the value of k tested. 
-
-You can check the output summary in [fastSTRUCT_woZaOut_simplerep-%j.out](./fastSTRUCTURE/HitGP/woZaOut/fastSTRUCT_woZaOut_simplere-%j.out). It contains the last tree lines of the *log files for each repetition and K, and the results of running the model complexity selection algoritm for each K. 
-
-
-The model complexity selected by simple prior was K=1 for the model complexity that maximizes marginal likelihood and K= 1,2,3,4 by the model components used to explain structure in data.  To detect more subtle structure run fasSTRUCTURE with the **logistic prior** with K=2,3,4 and 30 repetitions.
-
-```
-HitGP/woZaOut$
-bsub < bsub.fastSTRUCTURE_woZaOut_logisticrep.job
-```
-
-Results will be saved in the repruns directory. The number i in *rep_i corresponds to the repetition, and the number k in *rep_i.k correspodns to the value of k tested. 
-
-You can check the output summary in [fastSTRUCT_woZaOut_logisticrep-%j.out](./fastSTRUCTURE/HitGP/woZaOut/fastSTRUCT_woZaOut_logisticrep-%j.out). It contains the last tree lines of the *log files for each repetition and K, and the results of running the model complexity selection algoritm for each K. 
-
-
-
-#### BerSS
-
-Run fastSTRUCTURE with a range of values of K with the **simple prior** and 50 repetitions. 
-
-```
-HitGP$
-cd BerSS
-bsub < bsub.fastSTRUCTURE_BerSS_simplerep.job
-```
-
-Results will be saved in the repruns directory. The number i in *rep_i corresponds to the repetition, and the number k in *rep_i.k correspodns to the value of k tested. 
-
-You can check the output summary in [fastSTRUCT_BerSS_simplerep-%j.out](./fastSTRUCTURE/HitGP/BerSS/fastSTRUCT_BerSS_simplere-%j.out). It contains the last tree lines of the *log files for each repetition and K, and the results of running the model complexity selection algoritm for each K. 
-
-
-The model complexity selected by simple prior was K=1 for the model complexity that maximizes marginal likelihood and K= 1,2,3 by the model components used to explain structure in data.  To detect more subtle structure run fasSTRUCTURE with the **logistic prior** with K=2,3 and 30 repetitions.
-
-```
-HitGP/BerSS$
-bsub < bsub.fastSTRUCTURE_BerSS_logisticrep.job
-```
-
-Results will be saved in the repruns directory. The number i in *rep_i corresponds to the repetition, and the number k in *rep_i.k correspodns to the value of k tested. 
-
-You can check the output summary in [fastSTRUCT_BerSS_logisticrep-%j.out](./fastSTRUCTURE/HitGP/BerSS/fastSTRUCT_BerSS_logisticrep-%j.out). It contains the last tree lines of the *log files for each repetition and K, and the results of running the model complexity selection algoritm for each K. 
-
-
-
-### Set wd and input files 
-Create working directory and copy and rename accordinly structure file generated by Stacks (see script 5.*) 
-
-
-```
-cd ../fastSTRUCTURE/
-mkdir -p NohitGP
-cd NohitGP
-for i in "BerwoOut" "woZaOut" "BerSS"; do
-mkdir -p $i
-cp ../../data.out/PopSamples_m3/NohitGP/$i/out.noreplicates/batch_1.structure.tsv ./$i/structure$i.str
-done
-
-```
-
-Use the script **struc2faststruct.R** to change the value of missing data from 0 to -9 and to ensure that the first 6 columns contain samples names and metadata only (they are ignored by fastSTRUCTURE) and that there is NO header. This is the format required by fastSTRUCTURE.
-
-```
-R 
-source("../struc2faststruct.R")
-WD<-getwd()
-for (i in c("BerwoOut", "woZaOut", "BerSS")) {
-	struc2faststruct(inputfile=paste0(WD, "/", i,"/structure", i, ".str"), outputfile=paste0(WD,"/", i,"/structure", i, "fast.str"))
-	} 
-quit(save=("no"))
-```
-
-
-### Run Analyses
-
-
-#### woZaOut
-
-Run fastSTRUCTURE with a range of values of K with the **simple prior** and 50 repetitions. 
-
-```
-NohitGP$
-cd woZaOut
-bsub < bsub.fastSTRUCTURE_woZaOut_simplerep.job
-```
-
-Results will be saved in the repruns directory. The number i in *rep_i corresponds to the repetition, and the number k in *rep_i.k correspodns to the value of k tested. 
-
-You can check the output summary in [fastSTRUCT_woZaOut_simplerep-%j.out](./fastSTRUCTURE/NohitGP/woZaOut/fastSTRUCT_woZaOut_simplere-%j.out). It contains the last tree lines of the *log files for each repetition and K, and the results of running the model complexity selection algoritm for each K. 
-
-
-The model complexity selected by simple prior where K=2 and K=3. To detect more subtle structure run fasSTRUCTURE with the **logistic prior** with K= 2, 3 and 30 repetitions.
-
-```
-NohitGP/woZaOut$
-bsub < bsub.fastSTRUCTURE_woZaOut_logisticrep.job
-```
-
-Results will be saved in the repruns directory. The number i in *rep_i corresponds to the repetition, and the number k in *rep_i.k correspodns to the value of k tested. 
-
-You can check the output summary in [fastSTRUCT_woZaOut_logisticrep-%j.out](./fastSTRUCTURE/NohitGP/woZaOut/fastSTRUCT_woZaOut_logisticrep-%j.out). It contains the last tree lines of the *log files for each repetition and K, and the results of running the model complexity selection algoritm for each K. 
-
-
-
-#### BerSS
-
-Run fastSTRUCTURE with a range of values of K with the **simple prior** and 50 repetitions. 
-
-```
-NohitGP$
-cd BerSS
-bsub < bsub.fastSTRUCTURE_BerSS_simplerep.job
-```
-
-Results will be saved in the repruns directory. The number i in *rep_i corresponds to the repetition, and the number k in *rep_i.k correspodns to the value of k tested. 
-
-You can check the output summary in [fastSTRUCT_BerSS_simplerep-%j.out](./fastSTRUCTURE/NohitGP/BerSS/fastSTRUCT_BerSS_simplere-%j.out). It contains the last tree lines of the *log files for each repetition and K, and the results of running the model complexity selection algoritm for each K. 
-
-
-The model complexity selected by simple prior where K=2 and K=3. To detect more subtle structure run fasSTRUCTURE with the **logistic prior** and values similar those found for the simple. In this case run with K= 2, 3 and 30 repetitions.
-
-```
-NohitGP/BerSS$
-bsub < bsub.fastSTRUCTURE_BerSS_logisticrep.job
-```
-
-Results will be saved in the repruns directory. The number i in *rep_i corresponds to the repetition, and the number k in *rep_i.k correspodns to the value of k tested. 
-
-You can check the output summary in [fastSTRUCT_BerSS_logisticrep-%j.out](./fastSTRUCTURE/NohitGP/BerSS/fastSTRUCT_BerSS_logisticrep-%j.out). It contains the last tree lines of the *log files for each repetition and K, and the results of running the model complexity selection algoritm for each K. 
+You can check the output summary in [fastSTRUCT_BerSS_logisticrep-%j.out](./fastSTRUCTURE/ExcludingParalogs/AllLoci/BerSS/fastSTRUCT_BerSS_logisticrep-%j.out). It contains the last tree lines of the *log files for each repetition and K, and the results of running the model complexity selection algoritm for each K. 
 
 
 
