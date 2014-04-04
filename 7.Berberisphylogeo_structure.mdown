@@ -69,7 +69,7 @@ Results will be saved in the repruns directory. The number i in *rep_i correspon
 You can check the output summary in [fastSTRUCT_BerwoOut_simplerep-%j.out](./fastSTRUCTURE/ExcludingParalogs/AllLoci/BerwoOut/fastSTRUCT_BerwoOut_simplere-%j.out). It contains the last tree lines of the *log files for each repetition and K, and the results of running the model complexity selection algoritm for each K. 
 
 
-The model complexity selected by simple prior where K=X and K=X. To detect more subtle structure run fasSTRUCTURE with the **logistic prior** with K= 2, 3 and 30 repetitions.
+The model complexity selected by simple prior were K=2 and K=3. To detect more subtle structure run fasSTRUCTURE with the **logistic prior** with K= 2, 3 and 30 repetitions.
 
 ```
 ExcludingParalogs/AllLoci/BerwoOut$
@@ -96,7 +96,7 @@ Results will be saved in the repruns directory. The number i in *rep_i correspon
 You can check the output summary in [fastSTRUCT_woZaOut_simplerep-%j.out](./fastSTRUCTURE/ExcludingParalogs/AllLoci/woZaOut/fastSTRUCT_woZaOut_simplere-%j.out). It contains the last tree lines of the *log files for each repetition and K, and the results of running the model complexity selection algoritm for each K. 
 
 
-The model complexity selected by simple prior where K=2 and K=3. To detect more subtle structure run fasSTRUCTURE with the **logistic prior** with K= 2, 3 and 30 repetitions.
+The model complexity selected by simple prior were mostly K=2 and K=3 (exceptional K=9 and 8). To detect more subtle structure run fasSTRUCTURE with the **logistic prior** with K= 2, 3, 4 and 30 repetitions.
 
 ```
 ExcludingParalogs/AllLoci/woZaOut$
@@ -124,7 +124,7 @@ Results will be saved in the repruns directory. The number i in *rep_i correspon
 You can check the output summary in [fastSTRUCT_BerSS_simplerep-%j.out](./fastSTRUCTURE/ExcludingParalogs/AllLoci/BerSS/fastSTRUCT_BerSS_simplere-%j.out). It contains the last tree lines of the *log files for each repetition and K, and the results of running the model complexity selection algoritm for each K. 
 
 
-The model complexity selected by simple prior where K=2 and K=3. To detect more subtle structure run fasSTRUCTURE with the **logistic prior** and values similar those found for the simple. In this case run with K= 2, 3 and 30 repetitions.
+The model complexity selected by simple prior were K=2 and K=3. To detect more subtle structure run fasSTRUCTURE with the **logistic prior** and values similar those found for the simple. In this case run with K= 2, 3 and 30 repetitions.
 
 ```
 ExcludingParalogs/AllLoci/BerSS$
@@ -149,7 +149,7 @@ To plot using *distruct* (Rosenberg, 2004) it is necessary to produce an adecuat
 
 To run CLUMPP with fastSTRUCTURE output, first prepare the input file with the custom function `meanQ2clumpp.R` which takes a set of meanQ matrices and builds the input file as required for CLUMPP. Then, run CLUMPP using the output of this function as the indfile.  
 
-Run CLUMPP using the opition Method Greedy (M=2) and Greedy option 2 (the best permutation is constructed by greedily aligning runs. A number of input orders specified by repeats are tested and the one that produces the highest H is taken.) with 100000 repeats.
+Run CLUMPP using the opition Method Greedy (M=2) and Greedy option 2 (the best permutation is constructed by greedily aligning runs. A number of input orders specified by repeats are tested and the one that produces the highest H is taken) with 100000 repeats.
 
 This process is repeated for the **woZaOut** and **BerSS** datasets for the desired Ks with the Rmark document [fastSTRC_plotting.Rmd](./fastSTRC_plotting.Rmd). Results can be seen in [fastSTRC_plotting.html](./fastSTRC_plotting.html) or directly in the *.ps outputs generated for each dataset and K (saved inside each dataset directory).
 
