@@ -589,3 +589,61 @@ infoPCATree(plinkfile = paste0(WD,PopoutsfolderEXC,"/AllLoci/BerSS/out.noreplica
   outgroup= "PeB01")
 
 
+##########################  Excluding random 831 loci
+############### Information content and error rates
+####### BerAll
+## define paths
+final=paste0(WD,Popoutsfolder, "/PopSamples_BeralpBt_m3.SNP.SNPs")
+final.cov=paste0(WD,Popoutsfolder, "/PopSamples_BeralpBt_m3.COV.COVs")
+plink=paste0(WD,PopoutsfolderINC,"/AllLoci/BerAll/out.replicates/plink.raw")
+## open files
+final = read.delim(final, header = T) 
+final.cov= read.delim(final.cov, header = T) 
+liSNPs<- read.PLINK(file = plink)
+
+#### Repeat for 10 different sets of 831 random loci
+summary.errors<- data.frame()
+for(i in 1:10){
+## Subset data
+# final and cov
+set.seed(i)
+randloci <- sample(final$CatalogID, 831) # select 831 loci randombly
+l<-!final$CatalogID %in% randloci # loci not in randloci
+finalmodf<-final[l,]
+l<-!final.cov$CatalogID %in% randloci # loci not in randloci
+final.covmodf<-final.cov[l,]
+# plink 
+lnames<-locNames(liSNPs)
+lnames<-sub("_.", "", lnames)
+l<-!lnames %in% randloci # loci not in randloci
+liSNPsmodf<-liSNPs[,l] # keep all indvs and l loci
+
+
+## Estimate error rates
+param<-"rand" #label dataset
+# Loci et alleles
+source(paste0(WD,"/bin/LociAllele_error.R"))
+repliDiff<-LociAllele_error(mat=finalmodf, param=param) # Run funtion to get allele and loci error rates 
+m.allele.error<-mean(as.numeric(repliDiff$allele.error.rate))# Estimate mean allele and loci error rates
+m.locus.error<-mean(as.numeric(repliDiff$loci.error.rate))
+sd.allele.error<-sd(as.numeric(repliDiff$allele.error.rate))# Estimate SD from allele and loci error rates
+sd.locus.error<-sd(as.numeric(repliDiff$loci.error.rate))
+
+# SNPs
+source(paste0(WD,"/bin/SNPs_error.R"))
+n.SNPs<-liSNPsmodf$n.loc# Count number of SNPs (in plink the number of loci = number SNPs)
+y<-SNP_error(liSNPs=liSNPsmodf, param=param)# Run funtion to get SNP error rate
+repliDiff <-merge(repliDiff, y)# Add SNP.error.rate to the matrix of results
+m.SNP.error<-mean(as.numeric(paste(repliDiff$SNP.error.rate))) # Estimate mean SNP error rate
+sd.SNP.error<-sd(as.numeric(paste(repliDiff$SNP.error.rate)))# Estimate SD of SNP error rate
+
+
+# Return summary of results
+y<- cbind(i, n.SNPs,
+  m.locus.error, sd.locus.error,
+  m.allele.error, sd.allele.error,
+  m.SNP.error, sd.SNP.error)
+summary.errors<-rbind(summary.errors, y) 
+}
+# show results
+summary.errors
