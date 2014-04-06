@@ -39,9 +39,9 @@ whitePopMap(drop.rep = FALSE, tsv= paste0(WD,outfolder,"PopSamples_BeralpBt_m3.S
 system("mv data.out/PopSamples_m3/AllLoci/PopSamples_BeralpBt_m3.SNP.SNPs_PopMap_withrep.tsv data.out/PopSamples_m3/AllLoci/PopSamples_BeralpBt_m3.SNP.SNPs_PopMap_withrep_BerAll.tsv")
 
 #### BerwoOut
-# Create population map w/o Za and Out samples, EXCLUDING replicates
+# Create population map w/o and Out samples, EXCLUDING replicates
 x<-read.delim(file= paste0(WD,outfolder, "AllLoci/PopSamples_BeralpBt_m3.SNP.SNPs_PopMap_norep_BerAll.tsv"), header=FALSE)
-# look for sample names that do not include Za or Out
+# look for sample names that do not include Out
 s<-grep("Out", x[,1], invert= TRUE)
 #save those samples
 x<-x[s,]
@@ -50,7 +50,7 @@ write.table(x, file= paste0(WD,outfolder, "AllLoci/PopSamples_BeralpBt_m3.SNP.SN
   row.names =FALSE, col.names=FALSE,
   quote=FALSE)
 
-# Create population map w/o Za and Out samples, INCLUDING replicates
+# Create population map w/o and Out samples, INCLUDING replicates
 x<-read.delim(file= paste0(WD, outfolder, "AllLoci/PopSamples_BeralpBt_m3.SNP.SNPs_PopMap_withrep_BerAll.tsv"), header=FALSE)
 # look for sample names that do not include Za or Out
 s<-grep("Out", x[,1], invert= TRUE)
