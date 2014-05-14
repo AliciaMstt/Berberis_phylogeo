@@ -1,9 +1,10 @@
-getP0.5<-function(popsumstats, mp){
+getP0.5<-function(popsumstats, minp, maxp){
 
   ## Function subset the potential paralog loci from the batch_1.sumstats.tsv output of Stacks 
   ## paralogs are defined as those loci are P=0.5 in at least mp populations. 
   # popsumsstats: dataframe with column info as in batch_1.sumstats.tsv 
-  # mp: minimun number of populations in which loci P=0.5 should be to be considered paralogs
+  # minp: minimun number of populations in which loci P=0.5 should be 
+  # maxp: maximun number of populations in which loci P=0.5 should be
   require(plyr)
 
   # Get all Locus where P=0.5 in at least one pop
@@ -21,9 +22,9 @@ getP0.5<-function(popsumstats, mp){
   # Create column id with locus+BP info 
   dfs<-lapply(dfs, function(x) transform(x,id =interaction(Locus.ID,BP)))
  
-  # select locus+bp (id) that are P=0.5 in at least mp populations
+  # select locus+bp (id) that are P=0.5 in at least mixp populations and no more than maxp populations
   desired<- lapply(dfs, function(x) ddply(x, .(id), function(x)
-                                  if(sum(x$P==0.5)>=mp)x) )
+                                  if(sum(x$P==0.5)>=minp & sum(x$P==0.5)<=maxp)x) )
   
   
   #put in a single df again
