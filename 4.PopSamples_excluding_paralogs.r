@@ -173,42 +173,15 @@ dat <- stack(lapply(df.list, `[[`, "Pop.Name")) # extract just Pop.Name and put 
 plt<-ggplot(dat, aes(x=values, fill=ind)) + geom_bar(position="dodge", width=.8)
 plt<- plt + theme_bw() 
 plt<- plt + scale_x_discrete(limits=c("Aj","Iz","Ma","Pe","Tl","To","An", "Za", "Out")) #pops in desired order
-plt<- plt + scale_fill_discrete(name="RAD-loci with SNPs at P=0.5", labels=c("In at least one population", "Unique per population", "Shared with B. alpina ingroup")) #nicer legend
-plt
+plt<- plt + scale_fill_discrete(name="", labels=c("In at least one population", "Shared with ingroup", "Unique per population")) #nicer legend
+plt<- plt + theme(axis.text=element_text(size=15), legend.text=element_text(size=12)) 
+plt + xlab("Population") + ylab("Number of RAD-loci with at least one SNP at P=0.5")
 
 
 ##### See distribution of potential paralogs among spp and pops
 require(reshape2)
 
-# Keep only pop and Loci data
-df<-P0.5[,c(1,3)]
 
-## Transform to presence/absence matrix of Pop x loci
-# cast to wide format
-mt<-dcast(df, Pop.Name ~ Locus.ID)
-rownames(mt) <- mt[,1] #change first col to rownames
-mt<- mt[,2:ncol(mt)]
-# Some numbers are >1 because there was more than one SNP by loci, change them to 1
-mt[mt > 1] = 1
-mt<-as.matrix(mt)
-
-
-## Build distance matrix 
-par(mfrow = c(1, 1))
-dist_mt<-dist(mt, method="binary") 
-
-
-# plot distance matrix
-table.dist(dist_mt, csize=.7, labels=labels(dist_mt))
-table.dist(lower.tri(dist_mt), csize=.7, labels=labels(dist_mt))
-
-## NJ tree
-# Build tree from distance matrix
-tree<-nj(dist_mt)
-# root
-tree<-root(tree, outgroup="Out")
-#plot
-plot(tree)
 
 
 #### What happens with sets of 831 random loci?
