@@ -133,15 +133,47 @@ P0.5atleast1<-getP0.5(popsumstats=popsumstats, minp=1, maxp=9)
 P0.5atleast1<-P0.5atleast1[P0.5atleast1$P==0.5, ] #subset dataframe to loci P=0.5
 P0.5atleast1<-P0.5atleast1[!duplicated(P0.5atleast1[, c("Pop.Name", "Locus.ID")]), ] # there could be >1 SNPs at P=.5 per RAD-locus, keep only the first
 
+
+#### Loci at P=0.5 shared with B.alpina ingroup
+# defina B. alpina sensu stricto
+ingroup=c("Aj","Iz","Ma","Pe","Tl","To")
+# keep only P=0.5 of the P=0.5 loci in at least one Pop
+P0.5only1<-getP0.5(popsumstats=popsumstats, minp=1, maxp=1) 
+P0.5<-P0.5atleast1$P==0.5
+P0.5<-P0.5atleast1[P0.5, ]
+# Split data to have managable sizes
+dfs<-split(P0.5,P0.5$Locus.ID)
+# select locus+bp (id) that are P=0.5 in at least 2 populations
+desired<- lapply(dfs, function(x) ddply(x, .(id), function(x)
+  if(sum(x$P==0.5)>=2)x) )
+# select locus+bp (id) that are P=0.5 in at least one pop of the ingroup
+desired<- lapply(desired, function(x) ddply(x, .(id), function(x)
+  if(any(ingroup %in% x$Pop.Name))x) )
+#put in a single df again
+P0.5shared<- do.call("rbind", desired)
+# Plot number of loci with at least one SNP at P=0.5 that are shared with B. alpina ingroup 
+P0.5shared<-P0.5shared
+P0.5shared<-P0.5shared[!duplicated(P0.5shared[, c("Pop.Name", "Locus.ID")]), ] # there could 
+
 # P=0.5 UNIQUE to one population
 P0.5only1<-getP0.5(popsumstats=popsumstats, minp=1, maxp=1) 
 P0.5only1<-P0.5only1[P0.5only1$P==0.5, ] #subset dataframe to loci P=0.5
 P0.5only1<-P0.5only1[!duplicated(P0.5only1[, c("Pop.Name", "Locus.ID")]), ] # there could 
 
+
 ## Plot them with doging bars
-plt<- ggplot(P0.5atleast1, aes(x=Pop.Name))
-plt<- geom_bar()
-plt<- plt + geom_bar(data=P0.5only1)
+# Pop.Name should not be factor
+P0.5atleast1$Pop.Name<-as.vector(P0.5atleast1$Pop.Name)
+P0.5only1$Pop.Name<-as.vector(P0.5only1$Pop.Name)
+P0.5shared$Pop.Name<-as.vector(P0.5shared$Pop.Name)
+
+# plot togheter
+df.list <- list(a=P0.5atleast1, b=P0.5shared, c=P0.5only1) # pot dfs in a list
+dat <- stack(lapply(df.list, `[[`, "Pop.Name")) # extract just Pop.Name and put it ito a df containing only source dfs names and PopName
+plt<-ggplot(dat, aes(x=values, fill=ind)) + geom_bar(position="dodge", width=.8)
+plt<- plt + theme_bw() 
+plt<- plt + scale_x_discrete(limits=c("Aj","Iz","Ma","Pe","Tl","To","An", "Za", "Out")) #pops in desired order
+plt<- plt + scale_fill_discrete(name="RAD-loci with SNPs at P=0.5", labels=c("In at least one population", "Unique per population", "Shared with B. alpina ingroup")) #nicer legend
 plt
 
 
