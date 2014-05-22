@@ -1,0 +1,346 @@
+Figures
+========================================================
+
+Set directories and fuctions for general use
+
+```{r}
+rm(list = ls())
+# Define WD and other directories
+WD<-"/Volumes/TO_GO_1/BerL_1_2_3/3Berberis_phylogeo" 
+setwd(WD) 
+list.files()
+
+Popoutsfolder = "/data.out/PopSamples_m3" # where the outputs from running Stacks populations are
+
+PopoutsfolderINC = paste0(Popoutsfolder, "/IncludingParalogs") #data including paralogs
+
+PopoutsfolderEXC = paste0(Popoutsfolder, "/ExcludingParalogs") #excluding
+
+### load samples meta information (lane, barcode, pop, etc)
+matinfo = read.delim(paste(WD,"/info/Ber_06oct13.info", sep = ""), header = T)
+
+### Source functions to read Stacks populations output
+source(paste0(WD,"/bin/read.sumstats_summary.R"))
+source(paste0(WD,"/bin/read.sumstats.R"))
+
+###### Define colors 
+
+## to color a plot according to POPULATION
+
+#load RColorBrewer to have 12 nice contrasting colors per pop + grey for outgroups
+library(RColorBrewer)
+Mycols <-c(brewer.pal(5,name="Set1"), "brown", brewer.pal(7,name="Set2"), "grey")
+
+#all sampling pops (more than Berberis)
+all.pops<-c("Aj", "An", "Iz", "Pp", "Ma", "Pe", "Ne", "Ta", "Co", "Tl", "To", "Za", "Pt", "Out")
+
+# bind pops to colors to make a stable color key
+cols.pop.key =cbind(all.pops, Mycols)
+
+#function
+pops.col<- function(x){ # x is the dataframe to plot
+  plot.samples = names(x) #takes the samples names from the samples in the data we want to plot
+  idx = match(plot.samples, matinfo$sample) # matches the samples names with the samples names of a matrix info
+  info.plot = matinfo[idx,] #to add the information of the matinfo to the plot
+  pops = info.plot$Pop # the lane are now in the colum Lane, 
+  pops = as.factor(pops)
+  levels(pops) = cols.pop.key[match(levels(pops), cols.pop.key[, 1]), 2] # reassing the names of the lanes to its corresponding color key defined before
+  pops = as.character(pops) #this is what is read as a color list for col=
+}
+
+## Multiplot funciton (from source("http://peterhaschke.com/Code/multiplot.R")
+
+multiplot <- function(..., plotlist = NULL, file, cols = 1, layout = NULL) {
+  require(grid)
+
+  plots <- c(list(...), plotlist)
+
+  numPlots = length(plots)
+
+  if (is.null(layout)) {
+    layout <- matrix(seq(1, cols * ceiling(numPlots/cols)),
+                    ncol = cols, nrow = ceiling(numPlots/cols))
+  }
+
+  if (numPlots == 1) {
+    print(plots[[1]])
+
+  } else {
+    grid.newpage()
+    pushViewport(viewport(layout = grid.layout(nrow(layout), ncol(layout))))
+
+    for (i in 1:numPlots) {
+      matchidx <- as.data.frame(which(layout == i, arr.ind = TRUE))
+
+      print(plots[[i]], vp = viewport(layout.pos.row = matchidx$row,
+                                      layout.pos.col = matchidx$col))
+    }
+  }
+}
+
+
+```
+
+
+Plot the distribution of RAD-loci with at least one SNP at P=0.5 among populations and species for Figure 2.
+```{rfig.width=8, fig.height=10 }
+# Get functions
+library(ggplot2)
+source(paste0(WD,"/bin/getP0.5.R"))
+# load Stacks output file with populations summary statistics 
+popsumstats <-read.sumstats(file=paste0(WD,PopoutsfolderINC,"/AllLoci/BerAll/out.noreplicates/batch_1.sumstats.tsv"),
+  npop=9, popNames=c("Aj","An","Iz","Ma","Pe","Tl","To","Za","Out"))                  
+
+##### Generate datasets
+### P=0.5 in at least one pop
+P0.5atleast1<-getP0.5(popsumstats=popsumstats, minp=1, maxp=9) 
+P0.5atleast1<-P0.5atleast1[P0.5atleast1$P==0.5, ] #subset dataframe to loci P=0.5
+P0.5atleast1<-P0.5atleast1[!duplicated(P0.5atleast1[, c("Pop.Name", "Locus.ID")]), ] # there could be >1 SNPs at P=.5 per RAD-locus, keep only the first
+
+### Loci at P=0.5 shared with B.alpina ingroup
+# defina B. alpina sensu stricto
+ingroup=c("Aj","Iz","Ma","Pe","Tl","To")
+# keep only P=0.5 of the P=0.5 loci in at least one Pop
+P0.5only1<-getP0.5(popsumstats=popsumstats, minp=1, maxp=1) 
+P0.5<-P0.5atleast1$P==0.5
+P0.5<-P0.5atleast1[P0.5, ]
+# Split data to have managable sizes
+dfs<-split(P0.5,P0.5$Locus.ID)
+# select locus+bp (id) that are P=0.5 in at least 2 populations
+desired<- lapply(dfs, function(x) ddply(x, .(id), function(x)
+  if(sum(x$P==0.5)>=2)x) )
+# select locus+bp (id) that are P=0.5 in at least one pop of the ingroup
+desired<- lapply(desired, function(x) ddply(x, .(id), function(x)
+  if(any(ingroup %in% x$Pop.Name))x) )
+#put in a single df again
+P0.5shared<- do.call("rbind", desired)
+# Plot number of loci with at least one SNP at P=0.5 that are shared with B. alpina ingroup 
+P0.5shared<-P0.5shared
+P0.5shared<-P0.5shared[!duplicated(P0.5shared[, c("Pop.Name", "Locus.ID")]), ] # there could 
+
+### P=0.5 UNIQUE to one population
+P0.5only1<-getP0.5(popsumstats=popsumstats, minp=1, maxp=1) 
+P0.5only1<-P0.5only1[P0.5only1$P==0.5, ] #subset dataframe to loci P=0.5
+P0.5only1<-P0.5only1[!duplicated(P0.5only1[, c("Pop.Name", "Locus.ID")]), ] # there could 
+
+
+#### Plot them with dodging bars
+# Pop.Name should not be factor
+P0.5atleast1$Pop.Name<-as.vector(P0.5atleast1$Pop.Name)
+P0.5only1$Pop.Name<-as.vector(P0.5only1$Pop.Name)
+P0.5shared$Pop.Name<-as.vector(P0.5shared$Pop.Name)
+
+# plot togheter
+df.list <- list(a=P0.5atleast1, b=P0.5shared, c=P0.5only1) # pot dfs in a list
+dat <- stack(lapply(df.list, `[[`, "Pop.Name")) # extract just Pop.Name and put it ito a df containing only source dfs names and PopName
+plt<-ggplot(dat, aes(x=values, fill=ind)) + geom_bar(position="dodge", width=.8)
+plt<- plt + theme_bw() 
+plt<- plt + scale_x_discrete(limits=c("Aj","Iz","Ma","Pe","Tl","To","An", "Za", "Out")) #pops in desired order
+plt<- plt + scale_fill_discrete(name="", labels=c("a) Total by population", "b) Shared with ingroup", "c) Unique per population")) #nicer legend
+plt<-plt + theme(axis.text=element_text(size=12), axis.title.x=element_text(size=14, vjust=0.1), axis.title.y=element_text(size=14),legend.text=element_text(size=12)) 
+plt + xlab("Population") + ylab(expression(paste("Number of RAD-loci with at least one SNP-locus at ", italic(p), "=0.5")))
+```
+
+
+Plot the number of RAD-loci with at least one SNP at P=0.5 present in at least two pops/species by species
+Figure X.
+```{rfig.width=8, fig.height=10 }
+# Get functions
+library(ggplot2)
+source(paste0(WD,"/bin/getP0.5.R"))
+# load Stacks output file with populations summary statistics 
+popsumstats <-read.sumstats(file=paste0(WD,PopoutsfolderINC,"/AllLoci/BerAll/out.noreplicates/batch_1.sumstats.tsv"),
+  npop=9, popNames=c("Aj","An","Iz","Ma","Pe","Tl","To","Za","Out"))                  
+
+##### Generate datasets
+
+##### Generate datasets
+### P=0.5 in at least ONE pops or spp.
+P0.5atleast1<-getP0.5(popsumstats=popsumstats, minp=1, maxp=9) 
+P0.5atleast1<-P0.5atleast1[P0.5atleast1$P==0.5, ] #subset dataframe to loci P=0.5
+P0.5atleast1<-P0.5atleast1[!duplicated(P0.5atleast1[, c("Pop.Name", "Locus.ID")]), ]# there could be >1 SNPs at P=.5 per RAD-locus, keep only the first
+
+
+
+```
+
+
+
+
+
+Plot the Allele frequency spectrum (AFS) distribution for loci in each population that are SNPs in Berberis by ploting the frequency of the major allele (P) for Figure 3. 
+```{r fig.width=9, fig.height=11}
+library(ggplot2)
+library(plyr)
+
+## Including paralogs
+# load Stacks output file with populations summary statistics 
+popsumstats <-read.sumstats(file=paste0(WD,PopoutsfolderINC,"/AllLoci/BerAll/out.noreplicates/batch_1.sumstats.tsv"),
+  npop=9, popNames=c("Aj","An","Iz","Ma","Pe","Tl","To","Za","Out"))                  
+# Change to desired population order
+desiredorder<- c("Aj","Iz","Ma","Pe","Tl","To","An", "Za", "Out")
+popsumstats <- arrange(transform(popsumstats, Pop.Name=factor(Pop.Name, levels=desiredorder)), Pop.Name)
+
+# Plot the frequency of the major allele (P) by population
+plt <- ggplot(data=popsumstats, aes(x=P)) + theme_bw()
+plt <- plt + geom_histogram(aes(y =..density..), colour="black", fill="white", binwidth = 0.08)  +
+  ylab("Percentage of loci") + xlab("Allele Frequency") +
+  ylim(0,12)
+plt <- plt + facet_wrap(~Pop.Name)
+plt1 <- plt + ggtitle("a) All loci") + theme(title=element_text(size=12, vjust=0.9), axis.title=element_text(size=12, vjust=0.4))
+
+## ExcludingParalogs
+popsumstats <-read.sumstats(file=paste0(WD,PopoutsfolderEXC,"/AllLoci/BerAll/out.noreplicates/batch_1.sumstats.tsv"),
+  npop=9, popNames=c("Aj","An","Iz","Ma","Pe","Tl","To","Za","Out"))                  
+
+# Change to desired population order
+desiredorder<- c("Aj","Iz","Ma","Pe","Tl","To","An", "Za", "Out")
+popsumstats <- arrange(transform(popsumstats, Pop.Name=factor(Pop.Name, levels=desiredorder)), Pop.Name)
+
+# Plot the frequency of the major allele (P) by population
+plt <- ggplot(data=popsumstats, aes(x=P)) + theme_bw()
+plt <- plt + geom_histogram(aes(y =..density..), colour="black", fill="white", binwidth = 0.08)  +
+  ylab("Percentage of loci") + xlab("Allele Frequency") +
+  ylim(0,12)
+plt <- plt + facet_wrap(~Pop.Name) 
+plt2 <- plt + ggtitle(expression(paste("b) Excluding loci where ", italic("p"), "=0.5 in \u2265 2 pops. or spp."))) + theme(title=element_text(size=12, vjust=0.9), axis.title=element_text(size=12, vjust=0.4))
+
+### Plot both together
+plts<-list(plt1, plt2)
+multiplot(plotlist=plts, cols = 2)
+```
+
+
+For the dataset EXCLUDING paralogs plot the PCoA of all samples and excluding El Zamorano, for Figure 4.
+```{r fig.width=8, fig.height=11}
+ 
+
+# Inport using the plink file exported from populations Stacks program
+  # using whilelist file (i.e. loci in final matrix) and pop map excluding replicates and paralogs
+plinkfile=paste0(WD,PopoutsfolderEXC,"/AllLoci/BerAll/out.noreplicates/plink.raw")
+
+
+require(adegenet)
+# Read plinkfile
+  liSNPs<- read.PLINK(file=plinkfile)
+
+  
+# Change pop labels to Pop names
+  popNames=c("Aj","An","Iz","Ma","Pe","Tl","To","Za","Out")  
+  levels(pop(liSNPs))<-popNames
+
+  ## Compute pairwise distances between individuals 
+  # separate the whole genlight object in smaller ones by creating blocks of loci. This facilitates computing
+  blocks<- seploc(liSNPs, n.block=5) 
+  class(blocks) #check if it is a list
+  # estimate distance matrix between individuals of each block
+  D<- lapply(blocks, function(e) dist(as.matrix(e))) 
+  names(D) #check names correspond to blocks
+  # generate final general distance matrix by summing the distance matrixes
+  Df<- Reduce("+", D) 
+
+
+  ###  Compute distance matrix (euclidean)
+  dat.d = dist(Df)
+  
+  ## add matinfo to dat.d matrix
+  x <- match(labels(dat.d), matinfo$sample) #match labels with samples names
+  x <- matinfo[x,] #create a new matrix with the samples from dat.d
+  pop <- x$Pop #extract Pop info
+
+
+ ## PCoA display by POPULATION and defined colors
+  source(paste0(WD,"/bin/PCoA_popt.r"))
+par(mfrow=c(2,2), adj=0)
+PCoA_popt(dat.d, cols.pop.key=cols.pop.key, vect.grps=pop, pile = TRUE, title="a) All Samples") #labels = pops
+
+
+#### Take out the Za and Out samples and repeat PCoA
+  ## Take out Za from the matrix 
+  #look for sample names (and other data columns) that do NOT include "Za" 
+  s<-grep("Za|Out", labels(dat.d), value= TRUE, invert= TRUE)
+
+  #Transform dist matrix to matrix
+  dat.d<-as.matrix(dat.d)
+  #select the samples to keep
+  dat.d<-dat.d[s,s]
+  #transform to dist martrix again
+  dat.d<-as.dist(dat.d)
+
+  ## Repeat PCoA
+  # add matinfo to dat.d matrix
+  x <- match(labels(dat.d), matinfo$sample) #m atch labels with samples names
+  x <- matinfo[x,] # create a new matrix with the samples from dat.d
+  pop <- x$Pop # extract Pop info
+#plot 
+PCoA_popt(dat.d, cols.pop.key=cols.pop.key, pop, pile = TRUE, title="b) Excluding Za and Out")
+```
+
+
+
+
+
+For the dataset INCLUDING paralogs plot the PCoA of all samples and excluding El Zamorano, for Figure 1S.
+```{r fig.width=8, fig.height=11}
+ 
+
+# Inport using the plink file exported from populations Stacks program
+  # using whilelist file (i.e. loci in final matrix) and pop map excluding replicates and paralogs
+plinkfile=paste0(WD,PopoutsfolderINC,"/AllLoci/BerAll/out.noreplicates/plink.raw")
+
+
+require(adegenet)
+# Read plinkfile
+  liSNPs<- read.PLINK(file=plinkfile)
+
+  
+# Change pop labels to Pop names
+  popNames=c("Aj","An","Iz","Ma","Pe","Tl","To","Za","Out")  
+  levels(pop(liSNPs))<-popNames
+
+  ## Compute pairwise distances between individuals 
+  # separate the whole genlight object in smaller ones by creating blocks of loci. This facilitates computing
+  blocks<- seploc(liSNPs, n.block=5) 
+  class(blocks) #check if it is a list
+  # estimate distance matrix between individuals of each block
+  D<- lapply(blocks, function(e) dist(as.matrix(e))) 
+  names(D) #check names correspond to blocks
+  # generate final general distance matrix by summing the distance matrixes
+  Df<- Reduce("+", D) 
+
+
+  ###  Compute distance matrix (euclidean)
+  dat.d = dist(Df)
+  
+  ## add matinfo to dat.d matrix
+  x <- match(labels(dat.d), matinfo$sample) #match labels with samples names
+  x <- matinfo[x,] #create a new matrix with the samples from dat.d
+  pop <- x$Pop #extract Pop info
+
+
+ ## PCoA display by POPULATION and defined colors
+  source(paste0(WD,"/bin/PCoA_popt.r"))
+par(mfrow=c(2,2), adj=0)
+PCoA_popt(dat.d, cols.pop.key=cols.pop.key, vect.grps=pop, pile = TRUE, title="a) All Samples") #labels = pops
+
+
+#### Take out the Za and Out samples and repeat PCoA
+  ## Take out Za from the matrix 
+  #look for sample names (and other data columns) that do NOT include "Za" 
+  s<-grep("Za|Out", labels(dat.d), value= TRUE, invert= TRUE)
+
+  #Transform dist matrix to matrix
+  dat.d<-as.matrix(dat.d)
+  #select the samples to keep
+  dat.d<-dat.d[s,s]
+  #transform to dist martrix again
+  dat.d<-as.dist(dat.d)
+
+  ## Repeat PCoA
+  # add matinfo to dat.d matrix
+  x <- match(labels(dat.d), matinfo$sample) #m atch labels with samples names
+  x <- matinfo[x,] # create a new matrix with the samples from dat.d
+  pop <- x$Pop # extract Pop info
+#plot 
+PCoA_popt(dat.d, cols.pop.key=cols.pop.key, pop, pile = TRUE, title="b) Excluding Za and Out")
+```
