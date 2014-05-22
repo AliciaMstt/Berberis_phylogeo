@@ -161,6 +161,34 @@ P0.5atleast1<-P0.5atleast1[P0.5atleast1$P==0.5, ] #subset dataframe to loci P=0.
 P0.5atleast1<-P0.5atleast1[!duplicated(P0.5atleast1[, c("Pop.Name", "Locus.ID")]), ]# there could be >1 SNPs at P=.5 per RAD-locus, keep only the first
 
 
+### See distribution among spp and pops
+require(reshape2)
+
+# Keep only pop and Loci data
+df<-P0.5atleast1[,c(1,3)]
+
+## Transform to presence/absence matrix of Pop x loci
+# cast to wide format
+mt<-dcast(df, Pop.Name ~ Locus.ID)
+rownames(mt) <- mt[,1] #change first col to rownames
+mt<- mt[,2:ncol(mt)]
+# Some numbers are >1 because there was more than one SNP by loci, change them to 1
+mt[mt > 1] = 1
+mt<-as.matrix(mt)
+# Replace NA with 0
+mt[is.na(mt)] <- 0
+
+
+## Build distance matrix 
+dist_mt<-dist(mt, method="binary") 
+
+
+
+ ## PCoA display by POPULATION and defined colors
+  source(paste0(WD,"/bin/PCoA_popt.r"))
+par(mfrow=c(1,2), adj=0)
+PCoA_popt(dist_mt, cols.pop.key=cols.pop.key, vect.grps=labels(dist_mt), pile = TRUE, title="a) All Samples") #labels = pops
+
 
 ```
 
