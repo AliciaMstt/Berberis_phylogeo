@@ -9,7 +9,7 @@ datadirectory<-paste0(WD,"/data.out/PopSamples_m3")
 
 
 ##### Extract paralogs 
-#     defined as those loci are P=0.5 in a given minimal number of populations
+#defined as those loci are P=0.5 in a given minimal number of populations or species 
   ## Get data
 source(paste0(WD, "/bin/read.sumstats.R"))
 popsumstats <-read.sumstats(file=paste0(datadirectory,"/Popsouts_Rselec/out.noreplicates/batch_1.sumstats.tsv"),
@@ -27,6 +27,17 @@ popsumstats <-read.sumstats(file=paste0(datadirectory,"/Popsouts_Rselec/out.nore
   # Save list of potential paralogs
   writedirectory= paste0(WD,"/docs")
   write(pl, file= paste0(writedirectory, "/", "potentialparalogs"), ncolumns = 1)
+
+
+##### Extract loci were P=0.5 in any popupation
+P0.5<-getP0.5(popsumstats=popsumstats, minp=1, maxp=9)
+pl<-levels(as.factor(P0.5$Locus.ID))
+
+# Save list of loci were p=0.5 
+writedirectory= paste0(WD,"/docs")
+write(pl, file= paste0(writedirectory, "/", "lociP05"), ncolumns = 1)
+
+
 
 ###### Plot only potential paralogs to see if they are all heterozygous
 # Inport using the plink file exported from populations Stacks program
