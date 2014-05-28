@@ -1,0 +1,125 @@
+# !/bin/sh
+# This script creates a PopMap for a subset of samples of EQUAL SAMPLING SIZE for B. alpina, Zamorano and B. moranensis and runs populations from from Stacks
+#
+# The subset of samples correspond to:
+# * BerEQsz: all populations from Berberis alpina (including Za), Berberis moranensis (An population), Berberis trifolia (outgroup) including only four samples (chosen at random) for B. alpina and B. moranensis.
+#
+# The subset of loci correspond to:
+# * "IncludingParalogs": all loci, including all potential paralogs
+#
+#
+################################################################################################
+#
+# 
+#
+###
+### Run script to generate SNP while list for all loci and Population maps for subsets BerAl, woZaOut, BerSS. 
+### They will be stored in the the subfolder AllLoci inside the folder with the SNP.SNPs data.
+###
+#
+# Crete directory for output and run script:
+mkdir -p ../data.out/PopSamples_m3/AllLoci
+R CMD BATCH whitelist_AllLoci.r
+#
+#
+# Create Pop. Map of sampling size = 4 per pop + outgroup
+
+#
+###
+### Copy data to stacks relevant subdirectory to run populations
+###
+# 
+#
+# Use a loop to move data for BerAll woZaOut BerSS and for Including and Excluding Paralogs
+#
+# Create directories for paralogs grouping
+for a in "IncludingParalogs"; do
+mkdir -p ../../1stacks/stacks/PopSamples/PopSamples_m3/$a/
+# For blasting groups
+for i in "BerEQsz"; do
+# Create directories for outputs in 1stacks. This will be the WD for running populations
+mkdir -p ../../1stacks/stacks/PopSamples/PopSamples_m3/$a/AllLoci
+mkdir -p ../../1stacks/stacks/PopSamples/PopSamples_m3/$a/AllLoci/$i
+## Copy data to relevant directories
+# For whitelists:
+cp ../../3Berberis_phylogeo/data.out/PopSamples_m3/AllLoci/PopSamples_BeralpBt_m3.SNP.SNPs_whitelist.tsv ../../1stacks/stacks/PopSamples/PopSamples_m3/$a/AllLoci/$i
+#
+# For the Population Map:
+cp ../../3Berberis_phylogeo/data.out/PopSamples_m3/AllLoci/PopSamples_BeralpBt_m3.SNP.SNPs_PopMap* ../../1stacks/stacks/PopSamples/PopSamples_m3/BeralpBt/ 
+# Create folders for output
+mkdir -p ../../1stacks/stacks/PopSamples/PopSamples_m3/$a/AllLoci/$i/out.replicates 
+mkdir -p ../../1stacks/stacks/PopSamples/PopSamples_m3/$a/AllLoci/$i/out.noreplicates 
+done
+done
+#
+# Remove unnecesary files from data.out
+rm -rf ../data.out/PopSamples_m3/AllLoci
+#
+#
+#
+#
+####
+#### Run Stacks populations
+####
+#
+# Run populations Stacks program to estimate Fst and export 
+# Filter input so that to process a locus it must be present in -p of the populations 
+# export to Structure and plink format, recording only the first SNP per locus
+# Do the same with data including and excluding replicates (see output in out.replicates and out.noreplicates)
+#
+#
+#
+echo "### IncludingParalogs"
+#
+cd ../../1stacks/stacks/PopSamples/PopSamples_m3/IncludingParalogs/AllLoci/
+for i in "BerEQsz"; do
+echo "## $i"
+## Go to WD
+cd $i/
+# Delete posible .fst outs from previous runs
+rm ../../../BeralpBt/batch_1.fst_summary.tsv
+#
+## For data EXLUDING replicates
+# Run populations
+populations -P ../../../BeralpBt/ -M ../../../BeralpBt/PopSamples_BeralpBt_m3.SNP.SNPs_PopMap_norep_$i.tsv -b 1 -p 7 -f p_value --plink --structure --write_single_snp -W ./PopSamples_BeralpBt_m3.SNP.SNPs_whitelist.tsv
+#
+# Run plink to recode .ped to .raw plink file. This reads the plink.ped file and creates a plink.raw file in the WD
+plink --file ../../../BeralpBt/batch_1.plink --allow-no-sex --recodeA
+#
+# Have outputs to output folder to have them in a single place
+mv ../../../BeralpBt/batch_1.fst_summary.tsv ./out.noreplicates
+mv ../../../BeralpBt/batch_1.plink* ./out.noreplicates
+mv ../../../BeralpBt/batch_1.populations* ./out.noreplicates
+mv ../../../BeralpBt/batch_1.sumstats* ./out.noreplicates
+mv ./plink* ./out.noreplicates
+mv ../../../BeralpBt/batch_1.structure.tsv ./out.noreplicates/
+#
+## For data INCLUDING replicates
+# Run populations
+populations -P ../../../BeralpBt/ -M ../../../BeralpBt/PopSamples_BeralpBt_m3.SNP.SNPs_PopMap_withrep_$i.tsv -b 1 -p 7 -f p_value --plink --structure --write_single_snp -W ./PopSamples_BeralpBt_m3.SNP.SNPs_whitelist.tsv
+#
+# Run plink to recode .ped to .raw plink file. This reads the plink.ped file and creates a plink.raw file in the WD
+plink --file ../../../BeralpBt/batch_1.plink --allow-no-sex --recodeA
+#
+# Have outputs to output folder to have them in a single place
+mv ../../../BeralpBt/batch_1.fst_summary.tsv ./out.replicates
+mv ../../../BeralpBt/batch_1.plink* ./out.replicates
+mv ../../../BeralpBt/batch_1.populations* ./out.replicates
+mv ../../../BeralpBt/batch_1.sumstats* ./out.replicates
+mv ./plink* ./out.replicates
+mv ../../../BeralpBt/batch_1.structure.tsv ./out.replicates/
+cd ..
+done
+#
+#
+#
+####
+echo "#### Copy results to analyses folder"
+####
+cd ../..
+for a in "BerEQsz"; do
+mkdir -p ../../../../3Berberis_phylogeo/data.out/PopSamples_m3/$a
+cp -r ./$a/AllLoci ../../../../3Berberis_phylogeo/data.out/PopSamples_m3/$a/
+done
+#
+#
