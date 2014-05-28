@@ -17,13 +17,12 @@
 ### They will be stored in the the subfolder AllLoci inside the folder with the SNP.SNPs data.
 ###
 #
-# Crete directory for output and run script:
+# Crete directory for output and run script to create Pop. Map of sampling size = 4 per pop + outgroup
 mkdir -p ../data.out/PopSamples_m3/AllLoci
-R CMD BATCH whitelist_AllLoci.r
+R CMD BATCH whitelist_PopMapEQsz.r
 #
 #
-# Create Pop. Map of sampling size = 4 per pop + outgroup
-
+# 
 #
 ###
 ### Copy data to stacks relevant subdirectory to run populations
@@ -45,9 +44,8 @@ mkdir -p ../../1stacks/stacks/PopSamples/PopSamples_m3/$a/AllLoci/$i
 cp ../../3Berberis_phylogeo/data.out/PopSamples_m3/AllLoci/PopSamples_BeralpBt_m3.SNP.SNPs_whitelist.tsv ../../1stacks/stacks/PopSamples/PopSamples_m3/$a/AllLoci/$i
 #
 # For the Population Map:
-cp ../../3Berberis_phylogeo/data.out/PopSamples_m3/AllLoci/PopSamples_BeralpBt_m3.SNP.SNPs_PopMap* ../../1stacks/stacks/PopSamples/PopSamples_m3/BeralpBt/ 
-# Create folders for output
-mkdir -p ../../1stacks/stacks/PopSamples/PopSamples_m3/$a/AllLoci/$i/out.replicates 
+cp ../../3Berberis_phylogeo/data.out/PopSamples_m3/AllLoci/PopSamples_BeralpBt_m3.SNP.SNPs_EQsz* ../../1stacks/stacks/PopSamples/PopSamples_m3/BeralpBt/ 
+# Create folders for output 
 mkdir -p ../../1stacks/stacks/PopSamples/PopSamples_m3/$a/AllLoci/$i/out.noreplicates 
 done
 done
@@ -81,7 +79,7 @@ rm ../../../BeralpBt/batch_1.fst_summary.tsv
 #
 ## For data EXLUDING replicates
 # Run populations
-populations -P ../../../BeralpBt/ -M ../../../BeralpBt/PopSamples_BeralpBt_m3.SNP.SNPs_PopMap_norep_$i.tsv -b 1 -p 7 -f p_value --plink --structure --write_single_snp -W ./PopSamples_BeralpBt_m3.SNP.SNPs_whitelist.tsv
+populations -P ../../../BeralpBt/ -M ../../../BeralpBt/PopSamples_BeralpBt_m3.SNP.SNPs_EQsz.tsv -b 1 -p 7 -f p_value --plink --structure --write_single_snp -W ./PopSamples_BeralpBt_m3.SNP.SNPs_whitelist.tsv
 #
 # Run plink to recode .ped to .raw plink file. This reads the plink.ped file and creates a plink.raw file in the WD
 plink --file ../../../BeralpBt/batch_1.plink --allow-no-sex --recodeA
@@ -94,20 +92,6 @@ mv ../../../BeralpBt/batch_1.sumstats* ./out.noreplicates
 mv ./plink* ./out.noreplicates
 mv ../../../BeralpBt/batch_1.structure.tsv ./out.noreplicates/
 #
-## For data INCLUDING replicates
-# Run populations
-populations -P ../../../BeralpBt/ -M ../../../BeralpBt/PopSamples_BeralpBt_m3.SNP.SNPs_PopMap_withrep_$i.tsv -b 1 -p 7 -f p_value --plink --structure --write_single_snp -W ./PopSamples_BeralpBt_m3.SNP.SNPs_whitelist.tsv
-#
-# Run plink to recode .ped to .raw plink file. This reads the plink.ped file and creates a plink.raw file in the WD
-plink --file ../../../BeralpBt/batch_1.plink --allow-no-sex --recodeA
-#
-# Have outputs to output folder to have them in a single place
-mv ../../../BeralpBt/batch_1.fst_summary.tsv ./out.replicates
-mv ../../../BeralpBt/batch_1.plink* ./out.replicates
-mv ../../../BeralpBt/batch_1.populations* ./out.replicates
-mv ../../../BeralpBt/batch_1.sumstats* ./out.replicates
-mv ./plink* ./out.replicates
-mv ../../../BeralpBt/batch_1.structure.tsv ./out.replicates/
 cd ..
 done
 #
@@ -117,9 +101,9 @@ done
 echo "#### Copy results to analyses folder"
 ####
 cd ../..
-for a in "BerEQsz"; do
-mkdir -p ../../../../3Berberis_phylogeo/data.out/PopSamples_m3/$a
-cp -r ./$a/AllLoci ../../../../3Berberis_phylogeo/data.out/PopSamples_m3/$a/
+for a in "IncludingParalogs"; do
+mkdir -p ../../../../3Berberis_phylogeo/data.out/PopSamples_m3/$a/
+cp -r ./$a/AllLoci/BerEQsz ../../../../3Berberis_phylogeo/data.out/PopSamples_m3/$a/AllLoci
 done
 #
 #

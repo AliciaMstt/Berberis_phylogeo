@@ -12,6 +12,7 @@ module add stacks/1.17
 module add plink/1.06
 module add R/2.15.0 
 
-bash 4.StacksPopulations_AllLoci.script
+#bash 4.StacksPopulations_AllLoci.script
+bash 4.StacksPopulations_EQsampsize.script
 
 
