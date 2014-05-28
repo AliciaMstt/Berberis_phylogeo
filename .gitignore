@@ -18,3 +18,5 @@ StacksPopulationss-%j.out
 *.Rout
 
 6.Berberisphylogeo_examaning_popsoutput.Rmd
+
+*.noreplicates
