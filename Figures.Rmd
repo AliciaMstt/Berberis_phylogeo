@@ -14,7 +14,9 @@ Popoutsfolder = "/data.out/PopSamples_m3" # where the outputs from running Stack
 
 PopoutsfolderINC = paste0(Popoutsfolder, "/IncludingParalogs") #data including paralogs
 
-PopoutsfolderEXC = paste0(Popoutsfolder, "/ExcludingParalogs") #excluding
+PopoutsfolderEXC = paste0(Popoutsfolder, "/ExcludingParalogs") #excluding paralogs two or more pops/spp (ie keeping B. alpina orthologs)
+
+PopoutsfolderP05 = paste0(Popoutsfolder, "/Excluding_P05") # excluding ANY potential paralog
 
 ### load samples meta information (lane, barcode, pop, etc)
 matinfo = read.delim(paste(WD,"/info/Ber_06oct13.info", sep = ""), header = T)
@@ -239,13 +241,13 @@ multiplot(plotlist=plts, cols = 2)
 ```
 
 
-For the dataset EXCLUDING paralogs plot the PCoA of all samples and excluding El Zamorano, for Figure 4.
+For the dataset EXCLUDING all potential paralogs plot the PCoA of all samples and excluding El Zamorano, for Figure 4.
 ```{r fig.width=8, fig.height=11}
  
 
 # Inport using the plink file exported from populations Stacks program
   # using whilelist file (i.e. loci in final matrix) and pop map excluding replicates and paralogs
-plinkfile=paste0(WD,PopoutsfolderEXC,"/AllLoci/BerAll/out.noreplicates/plink.raw")
+plinkfile=paste0(WD,PopoutsfolderP05,"/AllLoci/BerAll/out.noreplicates/plink.raw")
 
 
 require(adegenet)

@@ -69,8 +69,9 @@ lane.col<- function(x){ # x is the dataframe to plot
 # * BerSS: Berberis alpina sensu stricto, populations (Aj, Iz, Ma, Pe, Tl, To) ie Berall excluding Za, Out and An.
 #
 # The subset of loci correspond to:
-# ** ExcludingParalogs: excluding the putatively paralogous loci (see scripts 5.*)
+# ** ExcludingParalogs: excluding the putatively paralogous loci within B. alpina (present in two pops or two spp)
 # ** IncludingParalogs: all RAD loci
+# ** Excluding_P05: excluding ANY potential paralog in all spp (loci where p=0.5 in any pop or sp)
 
 
 # Function to plots FIS and SNP frequency spectrum 
@@ -304,8 +305,13 @@ Summary_perfo <- function(id, final, final.cov, plink){
   sd.locus.error<-sd(as.numeric(repliDiff$loci.error.rate))
   
   ## Estimate SNP error rate
+  require(adegenet)
   # load plink file
   liSNPs<- read.PLINK(file = plink)
+  
+  # print summary
+  print("genlight object summary")
+  print(liSNPs)
   
   # Count number of SNPs (in plink the number of loci = number SNPs)
   n.SNPs<-liSNPs$n.loc
@@ -589,6 +595,136 @@ infoPCATree(plinkfile = paste0(WD,PopoutsfolderEXC,"/AllLoci/BerSS/out.noreplica
   outgroup= "PeB01")
 
 
+
+
+############################ Excluding_P05
+PopoutsfolderP05 = paste0(Popoutsfolder, "/Excluding_P05")
+paralogs<-read.delim(paste0(WD, "/docs/lociP05"), header=F)[,1]
+
+############### Information content and error rates
+####### BerAll
+# define paths
+final=paste0(WD,Popoutsfolder, "/PopSamples_BeralpBt_m3.SNP.SNPs")
+final.cov=paste0(WD,Popoutsfolder, "/PopSamples_BeralpBt_m3.COV.COVs")
+plink=paste0(WD,PopoutsfolderP05,"/AllLoci/BerAll/out.replicates/plink.raw")
+# open files
+final = read.delim(final, header = T) 
+final.cov= read.delim(final.cov, header = T) 
+# Subset data
+l<-!final$CatalogID %in% paralogs # loci not in paralogs
+final<-final[l,]
+l<-!final.cov$CatalogID %in% paralogs # loci not in paralogs
+final.cov<-final.cov[l,]
+# Run Summary performance function
+Summary_perfo(id="BerAll", final, final.cov, plink)
+
+####### BerwoOut
+# define paths
+final=paste0(WD,Popoutsfolder, "/PopSamples_BeralpBt_m3.SNP.SNPs")
+final.cov=paste0(WD,Popoutsfolder, "/PopSamples_BeralpBt_m3.COV.COVs")
+plink=paste0(WD,PopoutsfolderP05,"/AllLoci/BerwoOut/out.replicates/plink.raw")
+# open files
+final = read.delim(final, header = T) 
+final.cov= read.delim(final.cov, header = T) 
+# Subset data
+s<-grep("Out", colnames(final), invert= TRUE)
+final <- final[,s]
+s<-grep("Out", colnames(final.cov), invert= TRUE)
+final.cov <- final.cov[,s]
+l<-!final$CatalogID %in% paralogs # loci not in paralogs
+final<-final[l,]
+l<-!final.cov$CatalogID %in% paralogs # loci not in paralogs
+final.cov<-final.cov[l,]
+# Run Summary performance function
+Summary_perfo(id="BerwoOut", final, final.cov, plink)
+
+####### woZaOut
+# define paths
+plink=paste0(WD,PopoutsfolderP05,"/AllLoci/woZaOut/out.replicates/plink.raw")
+# Subset data (from previously subset)
+s<-grep("Za", colnames(final), invert= TRUE)
+final <- final[,s]
+s<-grep("Za", colnames(final.cov), invert= TRUE)
+final.cov <- final.cov[,s]
+l<-!final$CatalogID %in% paralogs # loci not in paralogs
+final<-final[l,]
+l<-!final.cov$CatalogID %in% paralogs # loci not in paralogs
+final.cov<-final.cov[l,]
+# Run Summary performance function
+Summary_perfo(id="woZaOut", final, final.cov, plink)
+
+####### BerSS
+# define paths
+plink=paste0(WD,PopoutsfolderP05,"/AllLoci/BerSS/out.replicates/plink.raw")
+# Subset data (from previously subset)
+s<-grep("An", colnames(final), invert= TRUE)
+final <- final[,s]
+s<-grep("An", colnames(final.cov), invert= TRUE)
+final.cov <- final.cov[,s]
+l<-!final$CatalogID %in% paralogs # loci not in paralogs
+final<-final[l,]
+l<-!final.cov$CatalogID %in% paralogs # loci not in paralogs
+final.cov<-final.cov[l,]
+# Run Summary performance function
+Summary_perfo(id="BerSS", final, final.cov, plink)
+
+
+############### Plots of FIS and SNP frequency spectrum 
+####### BerAll
+# load Stacks output file with populations summary statistics 
+popsumstats <-read.sumstats(file=paste0(WD,PopoutsfolderP05,"/AllLoci/BerAll/out.noreplicates/batch_1.sumstats.tsv"),
+  npop=9, popNames=c("Aj","An","Iz","Ma","Pe","Tl","To","Za","Out"))                  
+SNPFis.plots(popsumstats=popsumstats)
+
+####### BerwoOut
+# load Stacks output file with populations summary statistics 
+popsumstats <-read.sumstats(file=paste0(WD,PopoutsfolderP05,"/AllLoci/BerwoOut/out.noreplicates/batch_1.sumstats.tsv"),
+  npop=8, popNames=c("Aj","An","Iz","Ma","Pe","Tl","To","Za"))                  
+SNPFis.plots(popsumstats=popsumstats)
+
+####### woZaOut
+# load Stacks output file with populations summary statistics 
+popsumstats <-read.sumstats(file=paste0(WD,PopoutsfolderP05,"/AllLoci/woZaOut/out.noreplicates/batch_1.sumstats.tsv"),
+  npop=7, popNames=c("Aj","An","Iz","Ma","Pe","Tl","To"))                  
+SNPFis.plots(popsumstats=popsumstats)
+
+
+####### BerSS
+# load Stacks output file with populations summary statistics 
+popsumstats <-read.sumstats(file=paste0(WD,PopoutsfolderP05,"/AllLoci/BerSS/out.noreplicates/batch_1.sumstats.tsv"),
+  npop=6, popNames=c("Aj","Iz","Ma","Pe","Tl","To"))                  
+SNPFis.plots(popsumstats=popsumstats)
+
+########### PCA and NJTree
+
+####### BerAll
+infoPCATree(plinkfile = paste0(WD,PopoutsfolderP05,"/AllLoci/BerAll/out.noreplicates/plink.raw"),
+  popNames=c("Aj","An","Iz","Ma","Pe","Tl","To","Za","Out"),
+  outgroup= "OutBtAl214")
+
+
+
+####### BerwoOut
+## AllLoci
+infoPCATree(plinkfile = paste0(WD,PopoutsfolderP05,"/AllLoci/BerwoOut/out.noreplicates/plink.raw"),
+  popNames=c("Aj","An","Iz","Ma","Pe","Tl","To","Za"),
+  outgroup= "ZaB06")
+
+####### woZaOut
+## AllLoci
+infoPCATree(plinkfile = paste0(WD,PopoutsfolderP05,"/AllLoci/woZaOut/out.noreplicates/plink.raw"),
+  popNames=c("Aj","An","Iz","Ma","Pe","Tl","To"),
+  outgroup= "AnB01")
+
+####### BerSS
+## AllLoci
+infoPCATree(plinkfile = paste0(WD,PopoutsfolderP05,"/AllLoci/BerSS/out.noreplicates/plink.raw"),
+  popNames=c("Aj","Iz","Ma","Pe","Tl","To"),
+  outgroup= "PeB01")
+
+
+
+
 ##########################  Excluding random 831 loci
 ############### Information content and error rates
 ####### BerAll
@@ -603,7 +739,7 @@ liSNPs<- read.PLINK(file = plink)
 
 #### Repeat for 10 different sets of 831 random loci
 summary.errors<- data.frame()
-for(i in 1:10){
+for(i in 1:100){
 ## Subset data
 # final and cov
 set.seed(i)
