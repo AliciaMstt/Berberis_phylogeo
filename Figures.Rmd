@@ -136,8 +136,6 @@ multiplot(plotlist=plts, cols = 2)
 
 Plot the distribution of RAD-loci with at least one SNP at P=0.5 among populations and species under EQUAL SAMPLING SIZE (4 inds) for Figure 4.
 ```{rfig.width=8, fig.height=10 }
-# Get functions
-library(ggplot2)
 # load Stacks output file with populations summary statistics 
 popsumstats <-read.sumstats(file=paste0(WD,PopoutsfolderINC,"/AllLoci/BerEQsz/out.noreplicates/batch_1.sumstats.tsv"),
   npop=9, popNames=c("Aj","An","Iz","Ma","Pe","Tl","To","Za","Out"))                  
@@ -167,12 +165,12 @@ desired<- lapply(desired, function(x) ddply(x, .(id), function(x)
 P0.5shared<- do.call("rbind", desired)
 # Plot number of loci with at least one SNP at P=0.5 that are shared with B. alpina ingroup 
 P0.5shared<-P0.5shared
-P0.5shared<-P0.5shared[!duplicated(P0.5shared[, c("Pop.Name", "Locus.ID")]), ] # there could 
+P0.5shared<-P0.5shared[!duplicated(P0.5shared[, c("Pop.Name", "Locus.ID")]), ] # there could be >1 SNPs at P=.5 per RAD-locus, keep only the first
 
 ### P=0.5 PRIVATE to one population
 P0.5only1<-getP0.5(popsumstats=popsumstats, minp=1, maxp=1) 
 P0.5only1<-P0.5only1[P0.5only1$P==0.5, ] #subset dataframe to loci P=0.5
-P0.5only1<-P0.5only1[!duplicated(P0.5only1[, c("Pop.Name", "Locus.ID")]), ] 
+P0.5only1<-P0.5only1[!duplicated(P0.5only1[, c("Pop.Name", "Locus.ID")]), ] # there could be >1 SNPs at P=.5 per RAD-locus, keep only the first
 
 
 #### Plot them with dodging bars
@@ -190,6 +188,26 @@ plt<- plt + scale_x_discrete(limits=c("Aj","Iz","Ma","Pe","Tl","To","An", "Za"))
 plt<- plt + scale_fill_discrete(name="", labels=c("a) Total", "b) Shared with ingroup", "c) Private")) #nicer legend
 plt<-plt + theme(axis.text=element_text(size=12), axis.title.x=element_text(size=14, vjust=0.1), axis.title.y=element_text(size=14),legend.text=element_text(size=12)) 
 plt + xlab("Population") + ylab("Number of potential paralogs")
+
+### Which percentage of the non fixed loci are private potential paralogs?
+
+# How many priv pot paralogs? (SNP-loci level =/= RADloci)
+# ger potential private paralogs
+P0.5only1<-getP0.5(popsumstats=popsumstats, minp=1, maxp=1) 
+P0.5only1<-P0.5only1[P0.5only1$P==0.5, ] #subset dataframe to loci P=0.5
+priv.ct<-count(P0.5only1, vars="Pop.Name") #how many per pop?
+colnames(priv.ct)<-c("Pop.Name","priv.plg")
+
+# How many non fixed loci? (SNP-loci)
+nonfix<-popsumstats[popsumstats$P!=1,] # get non fixed loci
+nonfix.ct<-count(nonfix, vars="Pop.Name")
+colnames(nonfix.ct)<-c("Pop.Name","nonfix.loc")
+
+# Which percentage of the nonfix loci are private pot. paralogs?
+df<-merge(priv.ct, nonfix.ct) #merge data
+prop<-df$priv.plg*100/df$nonfix.loc # estimate % 
+df<-cbind(df,prop)
+df
 ```
 
 
