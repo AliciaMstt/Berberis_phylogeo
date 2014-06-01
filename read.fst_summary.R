@@ -6,7 +6,7 @@ read.fst_summary <- function(file, popNames){
     ### Get data
     Fstmat<-data.matrix(read.delim(file = file, row.names=1, fill=TRUE)) 
     # add col names
-    colnames(Fstmat)<- popNames
-    as.table(Fstmat)    
+    colnames(Fstmat)<- popNames 
+    Fstmat    
   }
   
