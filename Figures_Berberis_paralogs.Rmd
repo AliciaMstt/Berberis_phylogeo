@@ -91,7 +91,7 @@ multiplot <- function(..., plotlist = NULL, file, cols = 1, layout = NULL) {
 
 
 
-Plot the Site frequency spectrum (SFS) distribution for loci in each population that are SNPs in Berberis by ploting the frequency of the major allele (P) for Figure 3. 
+Plot the distribution of the frequency of the major allele for loci in each population that are SNPs in Berberis by ploting the frequency of the major allele (P) for Figure 3. 
 ```{r fig.width=9, fig.height=11}
 library(ggplot2)
 library(plyr)
@@ -104,15 +104,16 @@ popsumstats <-read.sumstats(file=paste0(WD,PopoutsfolderINC,"/AllLoci/BerAll/out
 desiredorder<- c("Aj","Iz","Ma","Pe","Tl","To","An", "Za", "Out")
 popsumstats <- arrange(transform(popsumstats, Pop.Name=factor(Pop.Name, levels=desiredorder)), Pop.Name)
 
-# Plot the frequency of the major allele (P) by population
+
+#### Plot the frequency of the major allele (P) by population
 plt <- ggplot(data=popsumstats, aes(x=P)) + theme_bw()
 plt <- plt + geom_histogram(aes(y =..density..), colour="black", fill="white", binwidth = 0.08)  +
-  ylab("Percentage of loci") + xlab("Allele Frequency") +
+  ylab("Percentage of loci") + xlab("Frequency of the major allele") +
   ylim(0,12)
 plt <- plt + facet_wrap(~Pop.Name)
 plt1 <- plt + ggtitle("a) All loci") + theme(title=element_text(size=12, vjust=0.9), axis.title=element_text(size=12, vjust=0.4))
 
-## ExcludingParalogs
+## ExcludingParalogs within B. alpina
 popsumstats <-read.sumstats(file=paste0(WD,PopoutsfolderEXC,"/AllLoci/BerAll/out.noreplicates/batch_1.sumstats.tsv"),
   npop=9, popNames=c("Aj","An","Iz","Ma","Pe","Tl","To","Za","Out"))                  
 
@@ -120,17 +121,24 @@ popsumstats <-read.sumstats(file=paste0(WD,PopoutsfolderEXC,"/AllLoci/BerAll/out
 desiredorder<- c("Aj","Iz","Ma","Pe","Tl","To","An", "Za", "Out")
 popsumstats <- arrange(transform(popsumstats, Pop.Name=factor(Pop.Name, levels=desiredorder)), Pop.Name)
 
-# Plot the frequency of the major allele (P) by population
+
+
+##### Plot the frequency of the major allele (P) by population
 plt <- ggplot(data=popsumstats, aes(x=P)) + theme_bw()
 plt <- plt + geom_histogram(aes(y =..density..), colour="black", fill="white", binwidth = 0.08)  +
-  ylab("Percentage of loci") + xlab("Allele Frequency") +
+  ylab("Percentage of loci") + xlab("Frequency of the major allele") +
   ylim(0,12)
 plt <- plt + facet_wrap(~Pop.Name) 
-plt2 <- plt + ggtitle(expression(paste("b) Excluding loci where ", italic("p"), "=0.5 in \u2265 2 pops. or spp."))) + theme(title=element_text(size=12, vjust=0.9), axis.title=element_text(size=12, vjust=0.4))
+plt2 <- plt + ggtitle(expression(paste("b) Putative orthologs within ", italic("B. alpina")))) + theme(title=element_text(size=12, vjust=0.9), axis.title=element_text(size=12, vjust=0.4))
 
 ### Plot both together
 plts<-list(plt1, plt2)
 multiplot(plotlist=plts, cols = 2)
+
+
+
+
+
 ```
 
 
@@ -184,7 +192,7 @@ df.list <- list(a=P0.5atleast1, b=P0.5shared, c=P0.5only1) # pot dfs in a list
 dat <- stack(lapply(df.list, `[[`, "Pop.Name")) # extract just Pop.Name and put it ito a df containing only source dfs names and PopName
 plt<-ggplot(dat, aes(x=values, fill=ind)) + geom_bar(position="dodge", width=.8)
 plt<- plt + theme_bw() 
-plt<- plt + scale_x_discrete(limits=c("Aj","Iz","Ma","Pe","Tl","To","An", "Za")) #pops in desired order and excluding Out
+plt<- plt + scale_x_discrete(limits=c("Aj","Iz","Ma","Pe","Tl","To", "Za", "An")) #pops in desired order and excluding Out
 plt<- plt + scale_fill_discrete(name="", labels=c("a) Total", "b) Shared with ingroup", "c) Private")) #nicer legend
 plt<-plt + theme(axis.text=element_text(size=12), axis.title.x=element_text(size=14, vjust=0.1), axis.title.y=element_text(size=14),legend.text=element_text(size=12)) 
 plt + xlab("Population") + ylab("Number of potential paralogs")
@@ -441,7 +449,7 @@ df<-cbind(priv.ct, meanFst)
 
 
 # Plot
-plt <- ggplot(data = df, aes(x = meanFst, y = priv.plg))  +      geom_point() + theme_bw() + xlab(expression(paste("mean ", italic("F") [ST], " (ortologous loci)"))) + ylab("Private potential paralogs") +
+plt <- ggplot(data = df, aes(x = meanFst, y = priv.plg))  +      geom_point() + theme_bw() + xlab(expression(paste("mean ", italic("F") [ST], " (orthologous loci)"))) + ylab("Number of private potential paralogs") +
 theme(axis.text=element_text(size=13), axis.title.x=element_text(size=14, vjust=0.1), axis.title.y=element_text(size=14))
 
 ## Fit line including Za
