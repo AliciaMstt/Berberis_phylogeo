@@ -28,6 +28,37 @@ popsumstats <-read.sumstats(file=paste0(datadirectory,"/Popsouts_Rselec/out.nore
   writedirectory= paste0(WD,"/docs")
   write(pl, file= paste0(writedirectory, "/", "potentialparalogs"), ncolumns = 1)
 
+### Examine Hobs and FIS of extracted loci
+# Get subset of loci
+df<-popsumstats[popsumstats$Locus.ID %in% pl,]
+  # in B. alpina ingroup pop.
+  ingroup=c("Aj","Iz","Ma","Pe","Tl","To")
+  # keep only ingroup
+  df<-popsumstats$Pop.Name %in% ingroup
+  df<-popsumstats[df,]
+  # Split data to have managable sizes
+  dfs<-split(df,df$Locus.ID)
+  # Create column id with locus+BP info 
+  dfs<-lapply(dfs, function(x) transform(x,id =interaction(Locus.ID,BP)))
+  # select locus+bp (id) that are P=0.5 in at least mixp populations and no more than maxp populations
+  desired<- lapply(dfs, function(x) ddply(x, .(id), function(x)
+    if(sum(x$P==0.5)>=2)x) )
+  # put in a single df again
+  x<- do.call("rbind", desired)
+
+# observed Het
+obsHet1<-x$Obs.Het==1 #get subset where observed Heterosigosity = 1.
+# % p=0.5 loci where all individuals are heterozygous (obsHe=1)
+sum(obsHet1) * 100 / nrow(x)
+# FIS
+negFIS<-x$Fis<1 #get subset where FIS is negative
+# % p=0.5 loci where FIS is negative
+sum(negFIS) * 100 / nrow(x)
+# % of negFIS loci with < 0.5 
+negFIS<-x[negFIS,]
+negFIS.5<-negFIS$Fis<=-0.5
+sum(negFIS.5) * 100 / nrow(negFIS)
+
 
 ##### Extract loci were P=0.5 in any popupation
 P0.5<-getP0.5(popsumstats=popsumstats, minp=1, maxp=9)
@@ -37,6 +68,27 @@ pl<-levels(as.factor(P0.5$Locus.ID))
 writedirectory= paste0(WD,"/docs")
 write(pl, file= paste0(writedirectory, "/", "lociP05"), ncolumns = 1)
 
+
+### Examine Hobs and FIS of extracted loci
+# Get subset of loci
+  df<-popsumstats[popsumstats$Locus.ID %in% pl,]
+  # get SNP-loci where p=0.5
+  P0.5<-df$P==0.5 
+  # how many?
+  sum(P0.5)
+  x<-df[P0.5,] #subset
+# observed Het
+obsHet1<-x$Obs.Het==1 #get subset where observed Heterosigosity = 1.
+# % p=0.5 loci where all individuals are heterozygous (obsHe=1)
+sum(obsHet1) * 100 / nrow(x)
+# FIS
+negFIS<-x$Fis<1 #get subset where FIS is negative
+# % p=0.5 loci where FIS is negative
+sum(negFIS) * 100 / nrow(x)
+# % of negFIS loci with < 0.5 
+negFIS<-x[negFIS,]
+negFIS.5<-negFIS$Fis<=-0.5
+sum(negFIS.5) * 100 / nrow(negFIS)
 
 
 ###### Plot only potential paralogs to see if they are all heterozygous
@@ -83,153 +135,10 @@ glPlot(paliSNPs)
 title("Putatively paralogous SNP loci")
 
 
-######## See distribution of loci P=0.5 among populations and species
-library(ggplot2)
-
-##### Loci at P=0.5 by Population
-# P=0.5 in at least one pop
-P0.5atleast1<-getP0.5(popsumstats=popsumstats, minp=1, maxp=9) 
-subdf<-P0.5atleast1[P0.5atleast1$P==0.5, ] #subset dataframe to loci P=0.5
-subdf<-subdf[!duplicated(subdf[, c("Pop.Name", "Locus.ID")]), ] # there could be >1 SNPs at P=.5 per RAD-locus, keep only the first
-plt<- ggplot(subdf, aes(x=Pop.Name)) + theme_bw() # plot by pop
-plt<- plt + geom_bar(fill="white", colour="black")
-plt<- plt + scale_x_discrete(limits=c("Aj","Iz","Ma","Pe","Tl","To","An", "Za", "Out")) 
-plt<- plt + ylab("Number of RAD-loci") + xlab("Population")
-plt 
-plt1<-plt
-
-#### Loci at P=0.5 UNIQUE by population
-# P=0.5 in only one population
-P0.5only1<-getP0.5(popsumstats=popsumstats, minp=1, maxp=1) 
-# Plot number of loci with at least one SNP at P=0.5 in only one population
-subdf<-P0.5only1[P0.5only1$P==0.5, ] #subset dataframe to loci P=0.5
-subdf<-subdf[!duplicated(subdf[, c("Pop.Name", "Locus.ID")]), ] # there could be >1 SNPs at P=.5 per RAD-locus, keep only the first
-plt<- ggplot(subdf, aes(x=Pop.Name)) + theme_bw() # plot by pop
-plt<- plt + geom_bar(fill="white", colour="black")
-plt<- plt + scale_x_discrete(limits=c("Aj","Iz","Ma","Pe","Tl","To","An", "Za", "Out")) 
-plt<- plt + ylab("Number of RAD-loci") + xlab("Population")
-plt 
-
-
-#### Loci at P=0.5 shared with B.alpina sensu stricto
-# defina B. alpina sensu stricto
-ingroup=c("Aj","Iz","Ma","Pe","Tl","To")
-# keep only P=0.5 of the P=0.5 loci in at least one Poo
-P0.5<-P0.5atleast1$P==0.5
-P0.5<-P0.5atleast1[P0.5, ]
-# Split data to have managable sizes
-dfs<-split(P0.5,P0.5$Locus.ID)
-# select locus+bp (id) that are P=0.5 in at least 2 populations
-desired<- lapply(dfs, function(x) ddply(x, .(id), function(x)
-  if(sum(x$P==0.5)>=2)x) )
-# select locus+bp (id) that are P=0.5 in at least one pop of the ingroup
-desired<- lapply(desired, function(x) ddply(x, .(id), function(x)
-  if(any(ingroup %in% x$Pop.Name))x) )
-#put in a single df again
-P0.5shared<- do.call("rbind", desired)
-# Plot number of loci with at least one SNP at P=0.5 that are shared with B. alpina ingroup 
-subdf<-P0.5shared
-subdf<-subdf[!duplicated(subdf[, c("Pop.Name", "Locus.ID")]), ] # there could be >1 SNPs at P=.5 per RAD-locus, keep only the first
-plt<- ggplot(subdf, aes(x=Pop.Name)) + theme_bw() # plot by pop
-plt<- plt + geom_bar(fill="white", colour="black")
-plt<- plt + scale_x_discrete(limits=c("Aj","Iz","Ma","Pe","Tl","To","An", "Za", "Out")) 
-plt<- plt + ylab("Number of RAD-loci") + xlab("Population")
-plt 
-
-
-##### Stack in a single plot:
-## Generate datasets
-# P=0.5 in at least one pop
-P0.5atleast1<-getP0.5(popsumstats=popsumstats, minp=1, maxp=9) 
-P0.5atleast1<-P0.5atleast1[P0.5atleast1$P==0.5, ] #subset dataframe to loci P=0.5
-P0.5atleast1<-P0.5atleast1[!duplicated(P0.5atleast1[, c("Pop.Name", "Locus.ID")]), ] # there could be >1 SNPs at P=.5 per RAD-locus, keep only the first
-
-
-#### Loci at P=0.5 shared with B.alpina ingroup
-# defina B. alpina sensu stricto
-ingroup=c("Aj","Iz","Ma","Pe","Tl","To")
-# keep only P=0.5 of the P=0.5 loci in at least one Pop
-P0.5only1<-getP0.5(popsumstats=popsumstats, minp=1, maxp=1) 
-P0.5<-P0.5atleast1$P==0.5
-P0.5<-P0.5atleast1[P0.5, ]
-# Split data to have managable sizes
-dfs<-split(P0.5,P0.5$Locus.ID)
-# select locus+bp (id) that are P=0.5 in at least 2 populations
-desired<- lapply(dfs, function(x) ddply(x, .(id), function(x)
-  if(sum(x$P==0.5)>=2)x) )
-# select locus+bp (id) that are P=0.5 in at least one pop of the ingroup
-desired<- lapply(desired, function(x) ddply(x, .(id), function(x)
-  if(any(ingroup %in% x$Pop.Name))x) )
-#put in a single df again
-P0.5shared<- do.call("rbind", desired)
-# Plot number of loci with at least one SNP at P=0.5 that are shared with B. alpina ingroup 
-P0.5shared<-P0.5shared
-P0.5shared<-P0.5shared[!duplicated(P0.5shared[, c("Pop.Name", "Locus.ID")]), ] # there could 
-
-# P=0.5 UNIQUE to one population
-P0.5only1<-getP0.5(popsumstats=popsumstats, minp=1, maxp=1) 
-P0.5only1<-P0.5only1[P0.5only1$P==0.5, ] #subset dataframe to loci P=0.5
-P0.5only1<-P0.5only1[!duplicated(P0.5only1[, c("Pop.Name", "Locus.ID")]), ] # there could 
-
-
-## Plot them with doging bars
-# Pop.Name should not be factor
-P0.5atleast1$Pop.Name<-as.vector(P0.5atleast1$Pop.Name)
-P0.5only1$Pop.Name<-as.vector(P0.5only1$Pop.Name)
-P0.5shared$Pop.Name<-as.vector(P0.5shared$Pop.Name)
-
-# plot togheter
-df.list <- list(a=P0.5atleast1, b=P0.5shared, c=P0.5only1) # pot dfs in a list
-dat <- stack(lapply(df.list, `[[`, "Pop.Name")) # extract just Pop.Name and put it ito a df containing only source dfs names and PopName
-plt<-ggplot(dat, aes(x=values, fill=ind)) + geom_bar(position="dodge", width=.8)
-plt<- plt + theme_bw() 
-plt<- plt + scale_x_discrete(limits=c("Aj","Iz","Ma","Pe","Tl","To","An", "Za", "Out")) #pops in desired order
-plt<- plt + scale_fill_discrete(name="", labels=c("In at least one population", "Shared with ingroup", "Unique per population")) #nicer legend
-plt<- plt + theme(axis.text=element_text(size=15), legend.text=element_text(size=12)) 
-plt + xlab("Population") + ylab("Number of RAD-loci with at least one SNP at P=0.5")
-
-
-##### See distribution of potential paralogs among spp and pops
-require(reshape2)
 
 
 
 
-#### What happens with sets of 831 random loci?
-# select random loci
-for(i in 1:10){
-set.seed(i)
-locinames<-levels(as.factor(popsumstats$Locus.ID)) # extract loci names
-randloci <- sample(locinames, 831) # select 831 loci randombly
-df<-popsumstats[popsumstats$Locus.ID %in% randloci,]
-
-# Keep only pop and Loci data
-df<-df[, c(1,3)]
-
-## Transform to presence/absence matrix of Pop x loci
-# cast to wide format
-mt<-dcast(df, Pop.Name ~ Locus.ID)
-rownames(mt) <- mt[,1] #change first col to rownames
-mt<- mt[,2:ncol(mt)]
-# Some numbers are >1 because there was more than one SNP by loci, change them to 1
-mt[mt > 1] = 1
-mt<-as.matrix(mt)
-
-## Build distance matrix 
-par(mfrow = c(1, 1))
-dist_mt<-dist(mt, method="binary") 
-
-# plot distance matrix
-table.dist(dist_mt, csize=.7, labels=labels(dist_mt))
-
-## NJ tree
-# Build tree from distance matrix
-tree<-nj(dist_mt)
-# root
-tree<-root(tree, outgroup="Out")
-#plot
-plot(tree)
-}
 
 
 

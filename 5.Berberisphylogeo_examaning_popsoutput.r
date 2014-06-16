@@ -66,12 +66,12 @@ lane.col<- function(x){ # x is the dataframe to plot
 # * BerAll: all populations from Berberis alpina (including Za), Berberis moranensis (An population), Berberis trifolia (outgroup).
 # * BerwoOut: all populations from Berberis alpina (including Za), Berberis moranensis (An population) but EXCLUDING outgroup (B. trifolia)
 # * woZaOut: excluding samples from El Zamorano population (Za) and Berberis trifolia (outgroup)
-# * BerSS: Berberis alpina sensu stricto, populations (Aj, Iz, Ma, Pe, Tl, To) ie Berall excluding Za, Out and An.
+# * BerSS: Berberis alpina sensu stricto (B. alpina ingroup in the text), populations (Aj, Iz, Ma, Pe, Tl, To) ie Berall excluding Za, Out and An.
 #
 # The subset of loci correspond to:
-# ** ExcludingParalogs: excluding the putatively paralogous loci within B. alpina (present in two pops or two spp)
+# ** ExcludingParalogs:"Putative orthologs within B. alpina" in the text, referst to excluding the putatively paralogous loci within B. alpina (present in two pops or two spp). 
 # ** IncludingParalogs: all RAD loci
-# ** Excluding_P05: excluding ANY potential paralog in all spp (loci where p=0.5 in any pop or sp)
+# ** Excluding_P05: "putative orthologs" in the text, refers to excluding ANY potential paralog in all spp (loci where p=0.5 in any pop or sp)
 
 
 # Function to plots FIS and SNP frequency spectrum 
@@ -358,7 +358,7 @@ Summary_perfo <- function(id, final, final.cov, plink){
 }
 
 
-############################ IncludingParalogs
+############################ IncludingParalogs ("All loci")
 PopoutsfolderINC = paste0(Popoutsfolder, "/IncludingParalogs")
 
 ############### Information content and error rates
@@ -412,12 +412,36 @@ final.cov <- final.cov[,s]
 Summary_perfo(id="BerSS", final, final.cov, plink)
 
 
-############### Plots of FIS and SNP frequency spectrum 
+############### Examining Hobs and FIS 
 ####### BerAll
 # load Stacks output file with populations summary statistics 
 popsumstats <-read.sumstats(file=paste0(WD,PopoutsfolderINC,"/AllLoci/BerAll/out.noreplicates/batch_1.sumstats.tsv"),
   npop=9, popNames=c("Aj","An","Iz","Ma","Pe","Tl","To","Za","Out"))                  
 SNPFis.plots(popsumstats=popsumstats)
+
+#### Examine the heterozygosity value of p=0.5 loci 
+## in B. alpina ingroup pop.
+ingroup=c("Aj","Iz","Ma","Pe","Tl","To")
+# keep only ingroup
+x<-popsumstats$Pop.Name %in% ingroup
+x<-popsumstats[x,]
+# observed Het
+P0.5<-x$P==0.5 # get loci where p=0.5
+# how many?
+sum(P0.5)
+P0.5<-x[P0.5,] #subset
+obsHet1<-P0.5$Obs.Het==1 #get subset where observed Heterosigosity = 1.
+# % p=0.5 loci where all individuals are heterozygous (obsHe=1)
+sum(obsHet1) * 100 / nrow(P0.5)
+
+# FIS
+negFIS<-P0.5$Fis<1 #get subset where FIS is negative
+# % p=0.5 loci where FIS is negative
+sum(negFIS) * 100 / nrow(P0.5)
+# % of negFIS loci with < 0.5 
+negFIS<-P0.5[negFIS,]
+negFIS.5<-negFIS$Fis<=-0.5
+sum(negFIS.5) * 100 / nrow(negFIS)
 
 ####### BerwoOut
 # load Stacks output file with populations summary statistics 
@@ -437,6 +461,30 @@ SNPFis.plots(popsumstats=popsumstats)
 popsumstats <-read.sumstats(file=paste0(WD,PopoutsfolderINC,"/AllLoci/BerSS/out.noreplicates/batch_1.sumstats.tsv"),
   npop=6, popNames=c("Aj","Iz","Ma","Pe","Tl","To"))                  
 SNPFis.plots(popsumstats=popsumstats)
+
+#### Examine the heterozygosity value of p=0.5 loci 
+## in B. alpina ingroup pop.
+ingroup=c("Aj","Iz","Ma","Pe","Tl","To")
+# keep only ingroup
+x<-popsumstats$Pop.Name %in% ingroup
+x<-popsumstats[x,]
+# observed Het
+P0.5<-x$P==0.5 # get loci where p=0.5
+# how many?
+sum(P0.5)
+P0.5<-x[P0.5,] #subset
+obsHet1<-P0.5$Obs.Het==1 #get subset where observed Heterosigosity = 1.
+# % p=0.5 loci where all individuals are heterozygous (obsHe=1)
+sum(obsHet1) * 100 / nrow(P0.5)
+
+# FIS
+negFIS<-P0.5$Fis<1 #get subset where FIS is negative
+# % p=0.5 loci where FIS is negative
+sum(negFIS) * 100 / nrow(P0.5)
+# % of negFIS loci with < 0.5 
+negFIS<-P0.5[negFIS,]
+negFIS.5<-negFIS$Fis<=-0.5
+sum(negFIS.5) * 100 / nrow(negFIS)
 
 ########### PCA and NJTree
 
@@ -468,9 +516,9 @@ infoPCATree(plinkfile = paste0(WD,PopoutsfolderINC,"/AllLoci/BerSS/out.noreplica
 
 
 ############################ ExcludingParalogs
+# "Putative orthologs within B. alpina" in the text, referst to excluding the putatively paralogous loci within B. alpina (present in two pops or two spp). 
 PopoutsfolderEXC = paste0(Popoutsfolder, "/ExcludingParalogs")
 paralogs<-read.delim(paste0(WD, "/docs/potentialparalogs"), header=F)[,1]
-
 
 
 ############### Information content and error rates
@@ -541,12 +589,36 @@ final.cov<-final.cov[l,]
 Summary_perfo(id="BerSS", final, final.cov, plink)
 
 
-############### Plots of FIS and SNP frequency spectrum 
+############### Examining Hobs and FIS 
 ####### BerAll
 # load Stacks output file with populations summary statistics 
 popsumstats <-read.sumstats(file=paste0(WD,PopoutsfolderEXC,"/AllLoci/BerAll/out.noreplicates/batch_1.sumstats.tsv"),
   npop=9, popNames=c("Aj","An","Iz","Ma","Pe","Tl","To","Za","Out"))                  
 SNPFis.plots(popsumstats=popsumstats)
+
+#### Examine the heterozygosity value of p=0.5 loci 
+## in B. alpina ingroup pop.
+ingroup=c("Aj","Iz","Ma","Pe","Tl","To")
+# keep only ingroup
+x<-popsumstats$Pop.Name %in% ingroup
+x<-popsumstats[x,]
+# observed Het
+P0.5<-x$P==0.5 # get loci where p=0.5
+# how many?
+sum(P0.5)
+P0.5<-x[P0.5,] # subset
+obsHet1<-P0.5$Obs.Het==1 #get subset where observed Heterosigosity = 1.
+# % p=0.5 loci where all individuals are heterozygous (obsHe=1)
+sum(obsHet1) * 100 / nrow(P0.5)
+
+# FIS
+negFIS<-P0.5$Fis<1 #get subset where FIS is negative
+# % p=0.5 loci where FIS is negative
+sum(negFIS) * 100 / nrow(P0.5)
+# % of negFIS loci with < 0.5 
+negFIS<-P0.5[negFIS,]
+negFIS.5<-negFIS$Fis<=-0.5
+sum(negFIS.5) * 100 / nrow(negFIS)
 
 ####### BerwoOut
 # load Stacks output file with populations summary statistics 
@@ -566,6 +638,28 @@ SNPFis.plots(popsumstats=popsumstats)
 popsumstats <-read.sumstats(file=paste0(WD,PopoutsfolderEXC,"/AllLoci/BerSS/out.noreplicates/batch_1.sumstats.tsv"),
   npop=6, popNames=c("Aj","Iz","Ma","Pe","Tl","To"))                  
 SNPFis.plots(popsumstats=popsumstats)
+
+#### Examine the heterozygosity value of p=0.5 loci 
+## in B. alpina ingroup pop.
+ingroup=c("Aj","Iz","Ma","Pe","Tl","To")
+# keep only ingroup
+x<-popsumstats$Pop.Name %in% ingroup
+x<-popsumstats[x,]
+# observed Het
+P0.5<-x$P==0.5 # get loci where p=0.5
+P0.5<-x[P0.5,]
+obsHet1<-P0.5$Obs.Het==1 #get subset where observed Heterosigosity = 1.
+# % p=0.5 loci where all individuals are heterozygous (obsHe=1)
+sum(obsHet1) * 100 / nrow(P0.5)
+
+# FIS
+negFIS<-P0.5$Fis<1 #get subset where FIS is negative
+# % p=0.5 loci where FIS is negative
+sum(negFIS) * 100 / nrow(P0.5)
+# % of negFIS loci with < 0.5 
+negFIS<-P0.5[negFIS,]
+negFIS.5<-negFIS$Fis<=-0.5
+sum(negFIS.5) * 100 / nrow(negFIS)
 
 ########### PCA and NJTree
 
@@ -598,6 +692,8 @@ infoPCATree(plinkfile = paste0(WD,PopoutsfolderEXC,"/AllLoci/BerSS/out.noreplica
 
 
 ############################ Excluding_P05
+# "putative orthologs" in the text, refers to excluding ANY potential paralog in all spp (loci where p=0.5 in any pop or sp)
+
 PopoutsfolderP05 = paste0(Popoutsfolder, "/Excluding_P05")
 paralogs<-read.delim(paste0(WD, "/docs/lociP05"), header=F)[,1]
 
@@ -669,12 +765,36 @@ final.cov<-final.cov[l,]
 Summary_perfo(id="BerSS", final, final.cov, plink)
 
 
-############### Plots of FIS and SNP frequency spectrum 
+############### Examining Hobs and FIS 
 ####### BerAll
 # load Stacks output file with populations summary statistics 
 popsumstats <-read.sumstats(file=paste0(WD,PopoutsfolderP05,"/AllLoci/BerAll/out.noreplicates/batch_1.sumstats.tsv"),
   npop=9, popNames=c("Aj","An","Iz","Ma","Pe","Tl","To","Za","Out"))                  
 SNPFis.plots(popsumstats=popsumstats)
+
+#### Examine the heterozygosity value of p=0.5 loci 
+## in B. alpina ingroup pop.
+ingroup=c("Aj","Iz","Ma","Pe","Tl","To")
+# keep only ingroup
+x<-popsumstats$Pop.Name %in% ingroup
+x<-popsumstats[x,]
+# observed Het
+P0.5<-x$P==0.5 # get loci where p=0.5
+# how many?
+sum(P0.5)
+P0.5<-x[P0.5,] #subset
+obsHet1<-P0.5$Obs.Het==1 #get subset where observed Heterosigosity = 1.
+# % p=0.5 loci where all individuals are heterozygous (obsHe=1)
+sum(obsHet1) * 100 / nrow(P0.5)
+
+# FIS
+negFIS<-P0.5$Fis<1 #get subset where FIS is negative
+# % p=0.5 loci where FIS is negative
+sum(negFIS) * 100 / nrow(P0.5)
+# % of negFIS loci with < 0.5 
+negFIS<-P0.5[negFIS,]
+negFIS.5<-negFIS$Fis<=-0.5
+sum(negFIS.5) * 100 / nrow(negFIS)
 
 ####### BerwoOut
 # load Stacks output file with populations summary statistics 
@@ -694,6 +814,27 @@ SNPFis.plots(popsumstats=popsumstats)
 popsumstats <-read.sumstats(file=paste0(WD,PopoutsfolderP05,"/AllLoci/BerSS/out.noreplicates/batch_1.sumstats.tsv"),
   npop=6, popNames=c("Aj","Iz","Ma","Pe","Tl","To"))                  
 SNPFis.plots(popsumstats=popsumstats)
+
+#### Examine the heterozygosity value of p=0.5 SNP-loci 
+## in B. alpina ingroup pop.
+ingroup=c("Aj","Iz","Ma","Pe","Tl","To")
+# keep only ingroup
+x<-popsumstats$Pop.Name %in% ingroup
+x<-popsumstats[x,]
+# observed Het
+P0.5<-x$P==0.5 # get loci where p=0.5
+P0.5<-x[P0.5,]
+obsHet1<-P0.5$Obs.Het==1 #get subset where observed Heterosigosity = 1.
+# % p=0.5 loci where all individuals are heterozygous (obsHe=1)
+sum(obsHet1) * 100 / nrow(P0.5)
+# FIS
+negFIS<-P0.5$Fis<1 #get subset where FIS is negative
+# % p=0.5 loci where FIS is negative
+sum(negFIS) * 100 / nrow(P0.5)
+# % of negFIS loci with < 0.5 
+negFIS<-P0.5[negFIS,]
+negFIS.5<-negFIS$Fis<=-0.5
+sum(negFIS.5) * 100 / nrow(negFIS)
 
 ########### PCA and NJTree
 
@@ -721,8 +862,6 @@ infoPCATree(plinkfile = paste0(WD,PopoutsfolderP05,"/AllLoci/woZaOut/out.norepli
 infoPCATree(plinkfile = paste0(WD,PopoutsfolderP05,"/AllLoci/BerSS/out.noreplicates/plink.raw"),
   popNames=c("Aj","Iz","Ma","Pe","Tl","To"),
   outgroup= "PeB01")
-
-
 
 
 ##########################  Excluding random 831 loci
