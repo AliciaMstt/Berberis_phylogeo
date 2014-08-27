@@ -1,4 +1,4 @@
-# This script uses Stacks populations summary stats output to identify potential paralog loci and create a whitelist excluding them
+# This script uses Stacks populations summary stats output to identify potential paralog loci 
 rm(list = ls())
 WD <- "/Volumes/TO_GO_1/BerL_1_2_3/3Berberis_phylogeo/"
 #WD<-"/gpfs/bio/bxh10nyu/BerL_1_2_3/PopSamples/" # to work in the cluster

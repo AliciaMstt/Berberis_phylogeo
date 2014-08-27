@@ -36,7 +36,7 @@ R CMD BATCH whitelist_AllLoci.r
 # Create directories for paralogs grouping
 for a in "ExcludingParalogs" "Excluding_P05" "IncludingParalogs"; do
 mkdir -p ../../1stacks/stacks/PopSamples/PopSamples_m3/$a/
-# For blasting groups
+# For pops groups
 for i in "BerAll" "BerwoOut" "woZaOut" "BerSS"; do
 # Create directories for outputs in 1stacks. This will be the WD for running populations
 mkdir -p ../../1stacks/stacks/PopSamples/PopSamples_m3/$a/AllLoci

@@ -200,7 +200,7 @@ plt + xlab("Population") + ylab("Number of potential paralogs")
 ### Which percentage of the non fixed loci are private potential paralogs?
 
 # How many priv pot paralogs? (SNP-loci level =/= RADloci)
-# ger potential private paralogs
+# get potential private paralogs
 P0.5only1<-getP0.5(popsumstats=popsumstats, minp=1, maxp=1) 
 P0.5only1<-P0.5only1[P0.5only1$P==0.5, ] #subset dataframe to loci P=0.5
 priv.ct<-count(P0.5only1, vars="Pop.Name") #how many per pop?
@@ -216,8 +216,18 @@ df<-merge(priv.ct, nonfix.ct) #merge data
 prop<-df$priv.plg*100/df$nonfix.loc # estimate % 
 df<-cbind(df,prop)
 df
-```
 
+
+### How many of the RAD-loci are potential paralogs per pop?
+num.potpara<-count(P0.5atleast1, vars="Pop.Name") # count pot. paralogs per pop
+num.potpara
+
+# % pot. para. of Za from total RAD-loci
+num.potpara[9,2]*100/6292 
+
+# pot. para. B.alpina ingroup (from larger sampling size dataset)
+831*100/6292 
+```
 
 
 Plot the distribution of RAD-loci with at least one SNP at P=0.5 among populations and species for Figure 2S.
@@ -500,6 +510,20 @@ plt<- plt + geom_text(aes(x = 0.058, y = 210, label = r2_val(lm(priv.plg ~ meanF
 plt
 
 ```
+
+
+
+Get session info
+```{r}
+# And R specifications
+sessionInfo()
+
+
+```
+
+
+
+
 
 
 DRAFT For the dataset EXCLUDING all potential paralogs plot the Fst matrix as a NJ dendogram, for Figure X. 
