@@ -19,7 +19,7 @@ popsumstats <-read.sumstats(file=paste0(datadirectory,"/Popsouts_Rselec/out.nore
 
   ## Get potential paralogs
   ## Function to subset the potential paralog loci from the batch_1.sumstats.tsv output of Stacks 
-  ## paralogs are defined as those loci are P=0.5 in at least mp populations. 
+  ## paralogs are defined as those loci are P=0.5 in at least minp populations. 
   source(paste0(WD, "/bin/getP0.5.R"))
   P0.5<-getP0.5(popsumstats=popsumstats, minp=2, maxp=9)
   pl<-levels(as.factor(P0.5$Locus.ID))
@@ -63,6 +63,7 @@ sum(negFIS.5) * 100 / nrow(negFIS)
 ##### Extract loci were P=0.5 in any popupation
 P0.5<-getP0.5(popsumstats=popsumstats, minp=1, maxp=9)
 pl<-levels(as.factor(P0.5$Locus.ID))
+
 
 # Save list of loci were p=0.5 
 writedirectory= paste0(WD,"/docs")
@@ -111,7 +112,7 @@ title("All loci")
 
 # Subset paralog loci
 lociall<-locNames(liSNPs, withAlleles=FALSE) #get loci 
-lociall<-gsub("_._.|_.._.", replacement="", lociall) #take out the BP position and base to keep only loci names
+lociall<-gsub("_.", replacement="", lociall) #take out the BP position and base to keep only loci names
 plplink<- lociall %in% pl # get the ones that match against the paralog list
 paliSNPs<-liSNPs[, plplink] # keep all individuals, and loci in plplink
   
