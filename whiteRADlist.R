@@ -28,7 +28,7 @@ whiteRADlist<-function(tsv, writedirectory, blacklist){
   whitelist<- "%w/o%"(all.loci, blacklist)
     
   # Write it to a file with the name of the tvs matrix plus _whitelist
-  write(whitelist, file= paste0(writedirectory, "/", basename(tsv), "_whitelist.tsv"), ncolumns = 1)
+  write(whitelist, file= paste0(writedirectory, "/", basename(tsv), "_whitelist.tsv"), ncolumns = 1, eol="\r")
     
     
     
