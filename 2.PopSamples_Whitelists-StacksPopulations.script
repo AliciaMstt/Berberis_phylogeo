@@ -80,6 +80,11 @@ mv ../BeralpBt/batch_1.structure.tsv ./out.noreplicates/
 
 
 ##### Copy results to 3Berberis_phylogeo folder:
+cp -r ../Popsouts_Rselec ../../../../../3Berberis_phylogeo/data.out/PopSamples_m3/
 
-cp -r ./ ../../../../../3Berberis_phylogeo/data.out/PopSamples_m3/AllLoci
+#### Remove unnecessary files 
+cd ../../../../../3Berberis_phylogeo/data.out/PopSamples_m3/
+rm -rf AllLoci
+
+
 

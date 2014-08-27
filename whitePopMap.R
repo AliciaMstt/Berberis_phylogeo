@@ -32,7 +32,7 @@ whitePopMap<-function(tsv, writedirectory, drop.rep, matinfo, PopOrder){
     str(x)
     # Write it to a file with the name of the tvs matrix plus _PopMap_withrep (indicating reps are included)
     write.table(x, file= paste0(writedirectory, "/", basename(tsv), "_PopMap_norep.tsv"), sep = "\t",
-      row.names =FALSE, col.names=FALSE,
+      row.names =FALSE, col.names=FALSE, eol="\r",
       quote=FALSE)
   } else {
     # Don't drop replicates
