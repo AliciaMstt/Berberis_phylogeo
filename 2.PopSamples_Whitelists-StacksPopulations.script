@@ -3,7 +3,7 @@
 #
 ## Create folder for outputs in 1stacks. This will be the WD
 # 
-mkdir ~/../../Volumes/TO_GO_1/BerL_1_2_3/1stacks/stacks/PopSamples/PopSamples_m3/Popsouts_RselecStructure
+mkdir ../../../BerL_1_2_3/1stacks/stacks/PopSamples/PopSamples_m3/Popsouts_Rselec
 #
 ## Prepare whitelist of RADloci and samples (PopulationMap) selected after the PostCleaning.r Rscript, they will be stored in the the subfolder AllLoci inside the folder with the SNP.SNPs data.
 #
@@ -11,16 +11,16 @@ mkdir ~/../../Volumes/TO_GO_1/BerL_1_2_3/1stacks/stacks/PopSamples/PopSamples_m3
 mkdir -p ../data.out/PopSamples_m3/AllLoci
 
 #run script to generate whitelist
-R CMD BATCH ~/../../Volumes/TO_GO_1/BerL_1_2_3/3Berberis_phylogeo/bin/whitelist_AllLoci.r
+R CMD BATCH ./whitelist_AllLoci.r
 #
 ### Copy resulted whitelists from R directory to stacks WD
 #
 # For whitelists:
-cp ../data.out/PopSamples_m3/AllLoci/PopSamples_BeralpBt_m3.SNP.SNPs_whitelist.tsv ~/../../Volumes/TO_GO_1/BerL_1_2_3/1stacks/stacks/PopSamples/PopSamples_m3/Popsouts_Rselec/
+cp ../data.out/PopSamples_m3/AllLoci/PopSamples_BeralpBt_m3.SNP.SNPs_whitelist.tsv ../../../BerL_1_2_3/1stacks/stacks/PopSamples/PopSamples_m3/Popsouts_Rselec/
 #
 #
 # For the Population Map:
-cp ../data.out/PopSamples_m3/AllLoci/PopSamples_BeralpBt_m3.SNP.SNPs_PopMap* ~/../../Volumes/TO_GO_1/BerL_1_2_3/1stacks/stacks/PopSamples/PopSamples_m3/BeralpBt/
+cp ../data.out/PopSamples_m3/AllLoci/PopSamples_BeralpBt_m3.SNP.SNPs_PopMap* ../../../BerL_1_2_3/1stacks/stacks/PopSamples/PopSamples_m3/BeralpBt/
 #
 ### Go to WD directory for populations script
 cd ../../1stacks/stacks/PopSamples/PopSamples_m3/Popsouts_Rselec
@@ -62,7 +62,7 @@ mv ../BeralpBt/batch_1.structure.tsv ./out.noreplicates/
 # 
 #
 # Delete posible .fst outs from previous runs
-rm ../batch_1.fst*
+rm ../BeralpBt/batch_1.fst*
 #
 # Run populations
 populations -P ../BeralpBt/ -M ../BeralpBt/PopSamples_BeralpBt_m3.SNP.SNPs_PopMap_withrep_BerAll.tsv -b 1 -p 8 --plink --structure --write_single_snp -W ./PopSamples_BeralpBt_m3.SNP.SNPs_whitelist.tsv
@@ -81,5 +81,5 @@ mv ../BeralpBt/batch_1.structure.tsv ./out.noreplicates/
 
 ##### Copy results to 3Berberis_phylogeo folder:
 
-cp -r ./ ../../../../../3Berberis_phylogeo/data.out/PopSamples_m3
+cp -r ./ ../../../../../3Berberis_phylogeo/data.out/PopSamples_m3/AllLoci
 
