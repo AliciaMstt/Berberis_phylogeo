@@ -1003,3 +1003,11 @@ summary.errors<-rbind(summary.errors, y)
 # (pval refers to p.values of the t-test comparing the mean error of the datasets 
 # excluding random loci vs the full dataset)
 summary.errors
+
+
+######## Summary of Settings for running this script -----
+# Working directory
+getwd()
+
+# And R specifications
+sessionInfo()

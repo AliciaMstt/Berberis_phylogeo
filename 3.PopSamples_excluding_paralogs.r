@@ -143,6 +143,14 @@ title("Putatively paralogous SNP loci")
 
 
 
+######## Summary of Settings for running this script -----
+# Working directory
+getwd()
+
+# And R specifications
+sessionInfo()
+
+
 
 
 
