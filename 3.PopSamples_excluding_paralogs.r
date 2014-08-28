@@ -73,7 +73,13 @@ write(pl, file= paste0(writedirectory, "/", "lociP05"), ncolumns = 1)
 ### Examine Hobs and FIS of extracted loci
 # Get subset of loci
   df<-popsumstats[popsumstats$Locus.ID %in% pl,]
-  # get SNP-loci where p=0.5
+  # in B. alpina ingroup pop.
+  ingroup=c("Aj","Iz","Ma","Pe","Tl","To")
+  # keep only ingroup
+  df<-popsumstats$Pop.Name %in% ingroup
+  df<-popsumstats[df,]  
+
+# get SNP-loci where p=0.5
   P0.5<-df$P==0.5 
   # how many?
   sum(P0.5)
