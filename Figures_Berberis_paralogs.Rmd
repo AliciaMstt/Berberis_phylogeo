@@ -203,6 +203,8 @@ plt + xlab("Population") + ylab("Number of potential paralogs")
 # get potential private paralogs
 P0.5only1<-getP0.5(popsumstats=popsumstats, minp=1, maxp=1) 
 P0.5only1<-P0.5only1[P0.5only1$P==0.5, ] #subset dataframe to loci P=0.5
+P0.5only1 <- P0.5only1[!duplicated(P0.5only1[, c("Pop.Name", "Locus.ID")]), 
+    ]  # there could be >1 SNPs at P=.5 per RAD-locus, keep only the first
 priv.ct<-count(P0.5only1, vars="Pop.Name") #how many per pop?
 colnames(priv.ct)<-c("Pop.Name","priv.plg")
 
