@@ -50,6 +50,6 @@ PopMapEQsz<-function(tsv, writedirectory, matinfo, homogp, dsz, PopOrder){
   
   # Write it to a file with the name of the tvs matrix plus _EQsz (indicating equal samplign size)
   write.table(x, file= paste0(writedirectory, "/", basename(tsv), "_EQsz.tsv"), sep = "\t",
-    row.names =FALSE, col.names=FALSE,
+    row.names =FALSE, col.names=FALSE, eol = "\n",
     quote=FALSE)  
 }
